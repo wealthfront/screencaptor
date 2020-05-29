@@ -1,0 +1,2 @@
+# ScreenCaptor
+Android screenshoting library
