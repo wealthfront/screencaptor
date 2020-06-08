@@ -1,4 +1,4 @@
-# ScreenCaptor
+# ScreenCaptor TEST
 Simple Android library to capture screenshots deterministically
 
 ## Features
