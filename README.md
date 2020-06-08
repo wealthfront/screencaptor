@@ -1,6 +1,8 @@
 # ScreenCaptor
 Simple Android library to capture screenshots deterministically
 
+#Change Test
+
 ## Features
 * Capture a screenshot of any view in your integration tests
 * Dynamically hide views from your screenshots (Eg. Dates, Account Value, etc)
