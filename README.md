@@ -51,10 +51,6 @@ When researching a way to properly take screenshots of a select view determinist
 
 Instead of using AndroidX's implementation of screenshot which utilizes the UiAutomator to take a screenshot, we manually draw the screen's content onto a bitmap canvas. This is a much more direct approach and ultimately leads to the screenshot process being the most native and close to the metal.
 
-### Posting to the MainThread
-
-Another measure we take to improve the determinism is to post to the front of the message queue on the main thread. We do this so that the screenshot is taken as soon as the user requests it. Taking screenshots is a unit of work that doesn't not have any shared mutable state with any other part of the app so this does not cause any issues. This is usually a dangerous thing to do, but in this case it makes sense. We also have to do this operation in the main thread since we will be mutating views visibility of certain dynamic views.
-
 ### Handling Dynamic data within views
 
 This is a pretty common case that we run into where we have a dynamic piece of data displayed on the view that might change with every run of the test. The classic example is any date that gets displayed on the screen. And for this, we have a way of disabling/hiding these views when we take the screenshot using the  **ViewVisibilityModifier**. This turns the views to be  **INVISIBLE** right before taking the screenshot and turns the views to their initial state after the screenshot is taken.
