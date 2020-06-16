@@ -33,10 +33,7 @@ object ScreenCaptor {
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
    * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
    * In this method, we post the operation to the main thread since we mutate the views and change
-   * the visibility of certain views before and after taking the screenshot. Along with that, we
-   * also want the operation to happen whenever the user requests to take the screenshot so we use
-   * [postAtFrontQueue] method to make that happen. This is usually a dangerous thing to do, but in
-   * this case it works out well.
+   * the visibility of certain views before and after taking the screenshot. 
    *
    * @param view to be captured as the screenshot and saved on the path provided.
    *
@@ -81,7 +78,7 @@ object ScreenCaptor {
     val screenshotFile = "$screenshotDirectory/$screenshotName.${screenshotFormat.extension}"
 
     Log.d(SCREENSHOT, "Posting to main thread for '$screenshotFile'")
-    mainHandler.postAtFrontOfQueue {
+    mainHandler.post {
       Log.d(SCREENSHOT, "Root view has height(${view.height}) and width(${view.width})")
       if (view.width == 0 || view.height == 0) {
         throw IllegalStateException("This view ($view) has no height or width. Is ${view.id} the currently displayed activity?")
