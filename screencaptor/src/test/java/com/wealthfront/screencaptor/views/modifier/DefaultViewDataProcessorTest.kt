@@ -31,7 +31,7 @@ class DefaultViewDataProcessorTest {
     assertThat(sampleView.findViewById<TextView>(R.id.textView).text).isEqualTo("Sample data")
     sampleView.findViewById<ImageView>(R.id.wealthfrontIcon).drawable.pixelsEqualTo(application.getDrawable(R.drawable.wf_logo))
 
-    viewDataProcessor.modifyViews(sampleView, listOf(
+    viewDataProcessor.modifyViews(sampleView, setOf(
       TextViewDataModifier(R.id.textView, "hidden"),
       ImageViewDataModifier(R.id.wealthfrontIcon, application.getDrawable(R.drawable.add_accounts)!!)
     ))
@@ -42,7 +42,7 @@ class DefaultViewDataProcessorTest {
 
   @Test
   fun resetViews() {
-    val initialState = viewDataProcessor.modifyViews(sampleView, listOf(
+    val initialState = viewDataProcessor.modifyViews(sampleView, setOf(
       TextViewDataModifier(R.id.textView, "hidden"),
       ImageViewDataModifier(R.id.wealthfrontIcon, application.getDrawable(R.drawable.add_accounts)!!)
     ))

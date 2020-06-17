@@ -53,7 +53,7 @@ object ScreenCaptor {
    * visibility to be invisible when the screenshot is taken and then turning it back to the
    * visibility that the view initially had.
    *
-   * @param viewModifiers takes in a list of data modifiers which will be processed by the [dataProcessor].
+   * @param viewModifiers takes in a set of data modifiers which will be processed by the [dataProcessor].
    *
    * @param dataProcessor allows you to present a custom modification processor.
    *
@@ -76,7 +76,7 @@ object ScreenCaptor {
     screenshotFilename: String,
     screenshotNameSuffix: String = "",
     viewIdsToExclude: Set<Int> = setOf(),
-    viewModifiers: List<DataModifier> = listOf(),
+    viewModifiers: Set<DataModifier> = setOf(),
     dataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
     screenshotDirectory: String = "/sdcard/screenshots",

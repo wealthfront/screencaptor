@@ -7,8 +7,8 @@ import android.widget.TextView
 
 internal class DefaultViewDataProcessor : ViewDataProcessor {
 
-  override fun modifyViews(view: View, viewDataModifiers: List<DataModifier>): List<DataModifier> {
-    val listOfInitialStateModifier = mutableListOf<DataModifier>()
+  override fun modifyViews(view: View, viewDataModifiers: Set<DataModifier>): Set<DataModifier> {
+    val listOfInitialStateModifier = mutableSetOf<DataModifier>()
     viewDataModifiers.forEach { modifier ->
       val initialStateModifier: DataModifier
       when (modifier) {
@@ -29,7 +29,7 @@ internal class DefaultViewDataProcessor : ViewDataProcessor {
     return listOfInitialStateModifier
   }
 
-  override fun resetViews(view: View, initialDataModifiers: List<DataModifier>) {
+  override fun resetViews(view: View, initialDataModifiers: Set<DataModifier>) {
     initialDataModifiers.forEach { modifier ->
       when (modifier) {
         is TextViewDataModifier -> view.findViewById<TextView>(modifier.id).text = modifier.data
@@ -40,8 +40,8 @@ internal class DefaultViewDataProcessor : ViewDataProcessor {
 }
 
 interface ViewDataProcessor {
-  fun modifyViews(view: View, viewDataModifiers: List<DataModifier>): List<DataModifier>
-  fun resetViews(view: View, initialDataModifiers: List<DataModifier>)
+  fun modifyViews(view: View, viewDataModifiers: Set<DataModifier>): Set<DataModifier>
+  fun resetViews(view: View, initialDataModifiers: Set<DataModifier>)
 }
 
 interface DataModifier {
