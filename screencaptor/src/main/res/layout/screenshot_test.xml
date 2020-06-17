@@ -41,6 +41,14 @@
           tools:ignore="Autofill,HardcodedText,LabelFor"
           />
 
+      <TextView
+          android:id="@+id/textView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Sample data"
+          tools:ignore="HardcodedText"
+          />
+
       <ScrollView
           android:id="@+id/anotherScrollView"
           android:layout_width="wrap_content"

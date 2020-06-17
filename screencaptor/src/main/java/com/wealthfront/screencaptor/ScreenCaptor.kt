@@ -12,8 +12,11 @@ import android.util.Log
 import android.view.View
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
-import com.wealthfront.screencaptor.views.ViewTreeMutator
-import com.wealthfront.screencaptor.views.ViewVisibilityModifier
+import com.wealthfront.screencaptor.views.modifier.DataModifier
+import com.wealthfront.screencaptor.views.modifier.DefaultViewDataProcessor
+import com.wealthfront.screencaptor.views.modifier.ViewDataProcessor
+import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
+import com.wealthfront.screencaptor.views.modifier.ViewVisibilityModifier
 import com.wealthfront.screencaptor.views.mutator.ScrollbarHider
 import com.wealthfront.screencaptor.views.mutator.CursorHider
 import com.wealthfront.screencaptor.views.mutator.ViewMutator
@@ -47,6 +50,10 @@ object ScreenCaptor {
    * visibility to be invisible when the screenshot is taken and then turning it back to the
    * visibility that the view initially had.
    *
+   * @param viewModifiers takes in a set of data modifiers which will be processed by the [dataProcessor].
+   *
+   * @param dataProcessor allows you to present a custom modification processor.
+   *
    * @param viewMutators allows you to mutate the subclasses of views in any particular way
    * (Hides scrollbars and cursors by default).
    *
@@ -66,6 +73,8 @@ object ScreenCaptor {
     screenshotFilename: String,
     screenshotNameSuffix: String = "",
     viewIdsToExclude: Set<Int> = setOf(),
+    viewModifiers: Set<DataModifier> = setOf(),
+    dataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
     screenshotDirectory: String = "/sdcard/screenshots",
     screenshotFormat: ScreenshotFormat = PNG,
@@ -92,6 +101,7 @@ object ScreenCaptor {
 
       Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
       val initialStateOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
+      val initialDataOfViews = dataProcessor.modifyViews(view, viewModifiers)
 
       Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFile'")
       val bitmap = Bitmap.createBitmap(view.width, view.height, ARGB_8888)
@@ -109,6 +119,7 @@ object ScreenCaptor {
 
       Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
       ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
+      dataProcessor.resetViews(view, initialDataOfViews)
     }
   }
 }

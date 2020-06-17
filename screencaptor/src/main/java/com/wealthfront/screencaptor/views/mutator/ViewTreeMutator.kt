@@ -1,7 +1,7 @@
-package com.wealthfront.screencaptor.views
+package com.wealthfront.screencaptor.views.mutator
 
 import android.view.View
-import com.wealthfront.screencaptor.views.mutator.ViewMutator
+import com.wealthfront.screencaptor.views.extensions.getAllChildren
 
 internal class ViewTreeMutator private constructor() {
 

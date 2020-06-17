@@ -30,7 +30,7 @@ Thumbs.db
 
 # Android Studio
 *.iml
-.idea/*
+.idea/
 !.idea/codeStyles/
 .gradle
 build/

@@ -5,6 +5,7 @@ Simple Android library to capture screenshots deterministically
 * Capture a screenshot of any view in your integration tests
 * Dynamically hide views from your screenshots (Eg. Dates, Account Value, etc)
 * Use `ViewMutators` to mutate various types of views as needed
+* Use `ViewModifiers` to allow supplying sample data for screenshots (which will be resetted after the screeenshot)
 
 ## Download
 

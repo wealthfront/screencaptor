@@ -1,4 +1,4 @@
-package com.wealthfront.screencaptor.views
+package com.wealthfront.screencaptor.views.modifier
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.google.common.truth.Truth.assertThat
 import com.wealthfront.screencaptor.R
+import com.wealthfront.screencaptor.views.modifier.ViewVisibilityModifier
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -1,11 +1,8 @@
-package com.wealthfront.screencaptor.views
+package com.wealthfront.screencaptor.views.extensions
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ScrollView
+import android.widget.*
 import androidx.core.widget.NestedScrollView
 import com.google.common.truth.Truth.assertThat
 import com.wealthfront.screencaptor.R
@@ -24,13 +21,14 @@ class ViewExtensionsTest {
   @Test
   fun getAllChildren() {
     val children = sampleView.getAllChildren()
-    assertThat(children.count()).isEqualTo(6)
+    assertThat(children.count()).isEqualTo(7)
     assertThat(children[0]).isInstanceOf(LinearLayout::class.java)
     assertThat(children[1]).isInstanceOf(NestedScrollView::class.java)
     assertThat(children[2]).isInstanceOf(LinearLayout::class.java)
     assertThat(children[3]).isInstanceOf(ImageView::class.java)
     assertThat(children[4]).isInstanceOf(EditText::class.java)
-    assertThat(children[5]).isInstanceOf(ScrollView::class.java)
+    assertThat(children[5]).isInstanceOf(TextView::class.java)
+    assertThat(children[6]).isInstanceOf(ScrollView::class.java)
   }
 
   @Test
