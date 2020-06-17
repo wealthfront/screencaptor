@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 
-internal class DefaultViewDataModifier : ViewDataModifier {
+internal class DefaultViewDataProcessor : ViewDataProcessor {
 
   override fun modifyViews(view: View, viewDataModifiers: List<DataModifier>): List<DataModifier> {
     val listOfInitialStateModifier = mutableListOf<DataModifier>()
@@ -15,11 +15,13 @@ internal class DefaultViewDataModifier : ViewDataModifier {
         is TextViewDataModifier -> {
           val textView = view.findViewById<TextView>(modifier.id)
           initialStateModifier = TextViewDataModifier(modifier.id, textView.text)
+          textView.text = modifier.data
           listOfInitialStateModifier.add(initialStateModifier)
         }
         is ImageViewDataModifier -> {
           val imageView = view.findViewById<ImageView>(modifier.id)
           initialStateModifier = ImageViewDataModifier(modifier.id, imageView.drawable)
+          imageView.setImageDrawable(modifier.data)
           listOfInitialStateModifier.add(initialStateModifier)
         }
       }
@@ -37,7 +39,7 @@ internal class DefaultViewDataModifier : ViewDataModifier {
   }
 }
 
-interface ViewDataModifier {
+interface ViewDataProcessor {
   fun modifyViews(view: View, viewDataModifiers: List<DataModifier>): List<DataModifier>
   fun resetViews(view: View, initialDataModifiers: List<DataModifier>)
 }

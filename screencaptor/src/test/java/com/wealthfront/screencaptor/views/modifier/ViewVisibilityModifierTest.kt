@@ -1,4 +1,4 @@
-package com.wealthfront.screencaptor.views
+package com.wealthfront.screencaptor.views.modifier
 
 import android.view.LayoutInflater
 import android.view.View
