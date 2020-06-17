@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import java.lang.IllegalArgumentException
 
 internal class DefaultViewDataProcessor : ViewDataProcessor {
 
@@ -24,6 +25,8 @@ internal class DefaultViewDataProcessor : ViewDataProcessor {
           imageView.setImageDrawable(modifier.data)
           listOfInitialStateModifier.add(initialStateModifier)
         }
+        else -> throw IllegalArgumentException("Unhandled modifier: ${modifier::class}. " +
+            "Please provide a custom ViewDataProcessor if you want to handle this modifier")
       }
     }
     return listOfInitialStateModifier
