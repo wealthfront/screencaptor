@@ -9,6 +9,8 @@ import android.widget.ScrollView
 import androidx.core.widget.NestedScrollView
 import com.google.common.truth.Truth.assertThat
 import com.wealthfront.screencaptor.R
+import com.wealthfront.screencaptor.views.extensions.getAllChildren
+import com.wealthfront.screencaptor.views.extensions.getViewResourceName
 import org.junit.Test
 
 import org.junit.runner.RunWith

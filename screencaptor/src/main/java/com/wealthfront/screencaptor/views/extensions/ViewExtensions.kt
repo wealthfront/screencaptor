@@ -1,4 +1,4 @@
-package com.wealthfront.screencaptor.views
+package com.wealthfront.screencaptor.views.extensions
 
 import android.content.res.Resources
 import android.view.View
