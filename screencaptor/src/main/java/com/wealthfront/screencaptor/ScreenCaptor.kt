@@ -102,6 +102,7 @@ object ScreenCaptor {
       Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
       val initialStateOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
       val initialDataOfViews = dataProcessor.modifyViews(view, viewModifiers)
+      view.requestLayout()
 
       Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFile'")
       val bitmap = Bitmap.createBitmap(view.width, view.height, ARGB_8888)
