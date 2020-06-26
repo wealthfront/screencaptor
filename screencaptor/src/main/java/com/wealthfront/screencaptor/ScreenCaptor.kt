@@ -50,9 +50,9 @@ object ScreenCaptor {
    * visibility to be invisible when the screenshot is taken and then turning it back to the
    * visibility that the view initially had.
    *
-   * @param viewModifiers takes in a set of data modifiers which will be processed by the [dataProcessor].
+   * @param viewModifiers takes in a set of data modifiers which will be processed by the [viewDataProcessor].
    *
-   * @param dataProcessor allows you to present a custom modification processor.
+   * @param viewDataProcessor allows you to pass in a custom view modification processor.
    *
    * @param viewMutators allows you to mutate the subclasses of views in any particular way
    * (Hides scrollbars and cursors by default).
@@ -74,7 +74,7 @@ object ScreenCaptor {
     screenshotNameSuffix: String = "",
     viewIdsToExclude: Set<Int> = setOf(),
     viewModifiers: Set<DataModifier> = setOf(),
-    dataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
+    viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
     screenshotDirectory: String = "/sdcard/screenshots",
     screenshotFormat: ScreenshotFormat = PNG,
@@ -101,7 +101,7 @@ object ScreenCaptor {
 
       Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
       val initialStateOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
-      val initialDataOfViews = dataProcessor.modifyViews(view, viewModifiers)
+      val initialDataOfViews = viewDataProcessor.modifyViews(view, viewModifiers)
 
       view.post {
         Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFile'")
@@ -120,7 +120,7 @@ object ScreenCaptor {
 
         Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
         ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
-        dataProcessor.resetViews(view, initialDataOfViews)
+        viewDataProcessor.resetViews(view, initialDataOfViews)
       }
     }
   }

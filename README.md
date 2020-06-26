@@ -5,14 +5,14 @@ Simple Android library to capture screenshots deterministically
 * Capture a screenshot of any view in your integration tests
 * Dynamically hide views from your screenshots (Eg. Dates, Account Value, etc)
 * Use `ViewMutators` to mutate various types of views as needed
-* Use `ViewModifiers` to allow supplying sample data for screenshots (which will be resetted after the screeenshot)
+* Use `ViewModifiers` to allow supplying sample data for screenshots (which will be reset after the screeenshot)
 
 ## Download
 
 Add this dependency in your build.gradle:
 
 ```groovy
-implementation 'com.wealthfront:screencaptor:0.2.0'
+implementation 'com.wealthfront:screencaptor:1.0.0'
 ```
 
 ## How do I capture a screenshot?
@@ -25,6 +25,8 @@ There are other configurations that you can pass in as well,
 
 * `screenshotNameSuffix` - for any suffix that you want to attach to your screenshot
 * `viewIdsToExclude` - takes in a set of ids to exclude from the screenshot
+* `viewModifiers` - takes in a set of data modifiers which will be processed by the [viewDataProcessor]
+* `viewDataProcessor` - allows you to pass in a custom view modification processor.
 * `viewMutators` - allows you to mutate the subclasses of views in any particular way (Hides scrollbars and cursors by default)
 * `screenshotDirectory` - specify which directory you want to save the screenshot in (sdcard/screenshots/ by default)
 * `screenshotFormat` - whether the format needs to be JPEG, PNG or WEBP (PNG by default)
@@ -39,6 +41,7 @@ ScreenCaptor.takeScreenshot(
   view = rootView,
   screenshotFilename = "my_favorite_screenshot",
   screenshotNameSuffix = "latest",
+  viewModifiers = = setOf(TextViewDataModifier(R.id.date, "01/01/2000"))
   viewIdsToExclude = setOf(R.id.date, R.id.account_value),
   screenshotFormat = JPEG,
   screenshotQuality = BEST

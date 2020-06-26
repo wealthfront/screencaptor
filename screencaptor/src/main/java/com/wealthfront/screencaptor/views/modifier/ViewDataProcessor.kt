@@ -14,9 +14,19 @@ interface ViewDataProcessor {
   fun resetViews(view: View, initialDataModifiers: Set<DataModifier>)
 }
 
+/**
+ * Use this to provide different implementation for different custom views and then process the data in the [ViewDataProcessor].
+ */
 interface DataModifier {
   val id: Int
 }
 
+/**
+ * Simple data modifier implementation for a text view.
+ */
 data class TextViewDataModifier(override val id: Int, val data: CharSequence) : DataModifier
+
+/**
+ * Simple data modifier implementation for an image view.
+ */
 data class ImageViewDataModifier(override val id: Int, val data: Drawable) : DataModifier
