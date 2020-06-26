@@ -41,6 +41,11 @@ class DefaultViewDataProcessorTest {
   }
 
   @Test
+  fun modifyViews_notPresentIdDoesNotThrow() {
+    viewDataProcessor.modifyViews(sampleView, setOf(TextViewDataModifier(R.id.random_id, "hidden")))
+  }
+
+  @Test
   fun resetViews() {
     val initialState = viewDataProcessor.modifyViews(sampleView, setOf(
       TextViewDataModifier(R.id.textView, "hidden"),
