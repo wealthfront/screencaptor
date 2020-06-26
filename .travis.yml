@@ -1,0 +1,22 @@
+language: android
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-27.0.3
+    - android-27
+    - extra
+
+before_install:
+  - yes | sdkmanager "platforms;android-27"
+
+jdk:
+  - oraclejdk8
+
+script:
+  - ./gradlew clean build test
+
+cache:
+  directories:
+    - $HOME/.gradle
