@@ -102,25 +102,26 @@ object ScreenCaptor {
       Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
       val initialStateOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
       val initialDataOfViews = dataProcessor.modifyViews(view, viewModifiers)
-      view.requestLayout()
 
-      Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFile'")
-      val bitmap = Bitmap.createBitmap(view.width, view.height, ARGB_8888)
-      val canvas = Canvas(bitmap)
-      view.draw(canvas)
+      view.post {
+        Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFile'")
+        val bitmap = Bitmap.createBitmap(view.width, view.height, ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
 
-      if (!File(screenshotDirectory).exists()) {
-        Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-        File(screenshotDirectory).mkdirs()
+        if (!File(screenshotDirectory).exists()) {
+          Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
+          File(screenshotDirectory).mkdirs()
+        }
+
+        Log.d(SCREENSHOT, "Writing to disk for '$screenshotFile'")
+        bitmap.compress(screenshotFormat.compression, screenshotQuality.value, FileOutputStream(screenshotFile))
+        Log.d(SCREENSHOT, "Successfully wrote to disk for '$screenshotFile'")
+
+        Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
+        ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
+        dataProcessor.resetViews(view, initialDataOfViews)
       }
-
-      Log.d(SCREENSHOT, "Writing to disk for '$screenshotFile'")
-      bitmap.compress(screenshotFormat.compression, screenshotQuality.value, FileOutputStream(screenshotFile))
-      Log.d(SCREENSHOT, "Successfully wrote to disk for '$screenshotFile'")
-
-      Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
-      ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
-      dataProcessor.resetViews(view, initialDataOfViews)
     }
   }
 }
