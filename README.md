@@ -1,6 +1,9 @@
 # ScreenCaptor
 Simple Android library to capture screenshots deterministically
 
+[![Build Status](https://travis-ci.org/wealthfront/screencaptor.svg?branch=master)](https://travis-ci.org/wealthfront/screencaptor)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wealthfront/screencaptor/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wealthfront/screencaptor)
+
 ## Features
 * Capture a screenshot of any view in your integration tests
 * Dynamically hide views from your screenshots (Eg. Dates, Account Value, etc)
