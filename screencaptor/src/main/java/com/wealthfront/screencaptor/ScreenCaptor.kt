@@ -71,7 +71,7 @@ object ScreenCaptor {
   @Synchronized
   fun takeScreenshot(
     rootViews: List<View>,
-    screenshotFilename: String,
+    screenshotName: String,
     screenshotNameSuffix: String = "",
     viewIdsToExclude: Set<Int> = setOf(),
     viewModifiers: Set<DataModifier> = setOf(),
@@ -82,40 +82,47 @@ object ScreenCaptor {
     screenshotQuality: ScreenshotQuality = BEST
   ) {
     rootViews.forEach { view ->
-      Log.d(SCREENSHOT, "Root views has height(${view.height}) and width(${view.width})")
+      Log.d(SCREENSHOT, "Root view has height(${view.height}) and width(${view.width})")
       if (view.width == 0 || view.height == 0) {
         throw IllegalStateException("This view ($view) has no height or width. Is ${view.id} the currently displayed activity?")
       }
     }
 
     val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
-    val screenshotName =
-      "${screenshotFilename.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFile = "$screenshotDirectory/$screenshotName.${screenshotFormat.extension}"
+    val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
+    val screenshotFilePath = "$screenshotDirectory/$screenshotId.${screenshotFormat.extension}"
 
     val bitmap = createCanvasBitmap(rootViews)
     val canvas = Canvas(bitmap)
 
-    rootViews.forEach { rootView ->
-      renderViewToCanvas(
-        canvas,
-        rootView,
-        viewIdsToExclude,
-        viewModifiers,
-        viewDataProcessor,
-        viewMutators,
-        screenshotName
+    mainHandler.post {
+      Log.d(SCREENSHOT, "Posting to main thread for '$screenshotId'")
+
+      rootViews.forEach { rootView ->
+        renderViewToCanvas(
+          canvas,
+          rootView,
+          viewIdsToExclude,
+          viewModifiers,
+          viewDataProcessor,
+          viewMutators,
+          screenshotName
+        )
+      }
+
+      if (!File(screenshotDirectory).exists()) {
+        Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
+        File(screenshotDirectory).mkdirs()
+      }
+
+      Log.d(SCREENSHOT, "Writing to disk for '$screenshotFilePath'")
+      bitmap.compress(
+        screenshotFormat.compression,
+        screenshotQuality.value,
+        FileOutputStream(screenshotFilePath)
       )
+      Log.d(SCREENSHOT, "Successfully wrote to disk for '$screenshotFilePath'")
     }
-
-    if (!File(screenshotDirectory).exists()) {
-      Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-      File(screenshotDirectory).mkdirs()
-    }
-
-    Log.d(SCREENSHOT, "Writing to disk for '$screenshotFile'")
-    bitmap.compress(screenshotFormat.compression, screenshotQuality.value, FileOutputStream(screenshotFile))
-    Log.d(SCREENSHOT, "Successfully wrote to disk for '$screenshotFile'")
   }
 
   private fun createCanvasBitmap(rootViews: List<View>): Bitmap {
@@ -131,29 +138,24 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier>,
     viewDataProcessor: ViewDataProcessor,
     viewMutators: Set<ViewMutator>,
-    screenshotFileName: String
+    screenshotName: String
   ) {
-    Log.d(SCREENSHOT, "Posting to main thread for '$screenshotFileName'")
-    mainHandler.post {
-      Log.d(SCREENSHOT, "Mutating views as needed!")
-      ViewTreeMutator.Builder()
-        .viewMutators(viewMutators)
-        .mutateView(view)
-        .mutate()
+    Log.d(SCREENSHOT, "Mutating views as needed!")
+    ViewTreeMutator.Builder()
+      .viewMutators(viewMutators)
+      .mutateView(view)
+      .mutate()
 
-      Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
-      val initialStateOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
-      val initialDataOfViews = viewDataProcessor.modifyViews(view, viewModifiers)
+    Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
+    val initialStateOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
+    val initialDataOfViews = viewDataProcessor.modifyViews(view, viewModifiers)
 
-      view.post {
-        Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFileName'")
-        view.draw(canvas)
-      }
+    Log.d(SCREENSHOT, "Taking screenshot for '$screenshotName'")
+    view.draw(canvas)
 
-      Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
-      ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
-      viewDataProcessor.resetViews(view, initialDataOfViews)
-    }
+    Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
+    ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
+    viewDataProcessor.resetViews(view, initialDataOfViews)
   }
 }
 
