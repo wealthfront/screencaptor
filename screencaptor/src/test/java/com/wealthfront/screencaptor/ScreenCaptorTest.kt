@@ -31,7 +31,7 @@ class ScreenCaptorTest {
   fun takeScreenshot_withoutDrawing() {
     try {
       ScreenCaptor.takeScreenshot(
-        view = sampleView,
+        rootViews = listOf(sampleView),
         screenshotFilename = "sample_screenshot",
         screenshotDirectory = folder.root.path
       )

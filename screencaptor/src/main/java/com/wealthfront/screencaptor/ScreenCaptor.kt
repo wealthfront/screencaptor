@@ -10,16 +10,17 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
 import com.wealthfront.screencaptor.views.modifier.DataModifier
 import com.wealthfront.screencaptor.views.modifier.DefaultViewDataProcessor
 import com.wealthfront.screencaptor.views.modifier.ViewDataProcessor
-import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
 import com.wealthfront.screencaptor.views.modifier.ViewVisibilityModifier
-import com.wealthfront.screencaptor.views.mutator.ScrollbarHider
 import com.wealthfront.screencaptor.views.mutator.CursorHider
+import com.wealthfront.screencaptor.views.mutator.ScrollbarHider
 import com.wealthfront.screencaptor.views.mutator.ViewMutator
+import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale.ENGLISH
@@ -36,7 +37,7 @@ object ScreenCaptor {
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
    * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
    * In this method, we post the operation to the main thread since we mutate the views and change
-   * the visibility of certain views before and after taking the screenshot. 
+   * the visibility of certain views before and after taking the screenshot.
    *
    * @param view to be captured as the screenshot and saved on the path provided.
    *
@@ -69,7 +70,7 @@ object ScreenCaptor {
    */
   @Synchronized
   fun takeScreenshot(
-    view: View,
+    rootViews: List<View>,
     screenshotFilename: String,
     screenshotNameSuffix: String = "",
     viewIdsToExclude: Set<Int> = setOf(),
@@ -80,19 +81,60 @@ object ScreenCaptor {
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
-
-    val device = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
-
-    val screenshotName = "${screenshotFilename.toLowerCase(ENGLISH)}_${device}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFile = "$screenshotDirectory/$screenshotName.${screenshotFormat.extension}"
-
-    Log.d(SCREENSHOT, "Posting to main thread for '$screenshotFile'")
-    mainHandler.post {
-      Log.d(SCREENSHOT, "Root view has height(${view.height}) and width(${view.width})")
+    rootViews.forEach { view ->
+      Log.d(SCREENSHOT, "Root views has height(${view.height}) and width(${view.width})")
       if (view.width == 0 || view.height == 0) {
         throw IllegalStateException("This view ($view) has no height or width. Is ${view.id} the currently displayed activity?")
       }
+    }
 
+    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
+    val screenshotName =
+      "${screenshotFilename.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
+    val screenshotFile = "$screenshotDirectory/$screenshotName.${screenshotFormat.extension}"
+
+    val bitmap = createCanvasBitmap(rootViews)
+    val canvas = Canvas(bitmap)
+
+    rootViews.forEach { rootView ->
+      renderViewToCanvas(
+        canvas,
+        rootView,
+        viewIdsToExclude,
+        viewModifiers,
+        viewDataProcessor,
+        viewMutators,
+        screenshotName
+      )
+    }
+
+    if (!File(screenshotDirectory).exists()) {
+      Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
+      File(screenshotDirectory).mkdirs()
+    }
+
+    Log.d(SCREENSHOT, "Writing to disk for '$screenshotFile'")
+    bitmap.compress(screenshotFormat.compression, screenshotQuality.value, FileOutputStream(screenshotFile))
+    Log.d(SCREENSHOT, "Successfully wrote to disk for '$screenshotFile'")
+  }
+
+  private fun createCanvasBitmap(rootViews: List<View>): Bitmap {
+    val canvasWidth = rootViews.map { it.width }.max()!!
+    val canvasHeight = rootViews.map { it.height }.max()!!
+    return Bitmap.createBitmap(canvasWidth, canvasHeight, ARGB_8888)
+  }
+
+  private fun renderViewToCanvas(
+    canvas: Canvas,
+    view: View,
+    viewIdsToExclude: Set<Int>,
+    viewModifiers: Set<DataModifier>,
+    viewDataProcessor: ViewDataProcessor,
+    viewMutators: Set<ViewMutator>,
+    screenshotFileName: String
+  ) {
+    Log.d(SCREENSHOT, "Posting to main thread for '$screenshotFileName'")
+    mainHandler.post {
       Log.d(SCREENSHOT, "Mutating views as needed!")
       ViewTreeMutator.Builder()
         .viewMutators(viewMutators)
@@ -104,24 +146,13 @@ object ScreenCaptor {
       val initialDataOfViews = viewDataProcessor.modifyViews(view, viewModifiers)
 
       view.post {
-        Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFile'")
-        val bitmap = Bitmap.createBitmap(view.width, view.height, ARGB_8888)
-        val canvas = Canvas(bitmap)
+        Log.d(SCREENSHOT, "Taking screenshot for '$screenshotFileName'")
         view.draw(canvas)
-
-        if (!File(screenshotDirectory).exists()) {
-          Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-          File(screenshotDirectory).mkdirs()
-        }
-
-        Log.d(SCREENSHOT, "Writing to disk for '$screenshotFile'")
-        bitmap.compress(screenshotFormat.compression, screenshotQuality.value, FileOutputStream(screenshotFile))
-        Log.d(SCREENSHOT, "Successfully wrote to disk for '$screenshotFile'")
-
-        Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
-        ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
-        viewDataProcessor.resetViews(view, initialDataOfViews)
       }
+
+      Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
+      ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialStateOfViews)
+      viewDataProcessor.resetViews(view, initialDataOfViews)
     }
   }
 }

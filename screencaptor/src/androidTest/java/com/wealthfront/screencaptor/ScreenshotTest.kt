@@ -24,7 +24,7 @@ class ScreenshotTest {
     val rootView = activityTestRule.activity.window.decorView
 
     ScreenCaptor.takeScreenshot(
-      view = rootView,
+      rootViews = listOf(rootView),
       screenshotFilename = "sample_screenshot"
     )
 
