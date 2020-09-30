@@ -6,6 +6,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
+import junit.framework.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,9 +31,9 @@ class ScreenshotTest {
     )
 
     Espresso.onIdle {
-      assert(File("sdcard/screenshots/").exists())
-      assert(File("sdcard/screenshots/").listFiles()!!.isNotEmpty())
-      assert(File("sdcard/screenshots/").listFiles()!!.find { it.name.contains("sample_screenshot") }!!.exists())
+      assertTrue(File("/sdcard/screenshots/").exists())
+      assertTrue(File("/sdcard/screenshots/").listFiles()!!.isNotEmpty())
+      assertTrue(File("/sdcard/screenshots/").listFiles()!!.find { it.name.contains("sample_screenshot") }!!.exists())
     }
   }
 }
