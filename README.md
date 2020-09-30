@@ -21,7 +21,7 @@ implementation 'com.wealthfront:screencaptor:1.0.0'
 ## How do I capture a screenshot?
 The simplest way to capture a screenshot is to just pass in the view to be screenshotted with a name for the screenshot when you want to take one.
 ```kotlin
-ScreenCaptor.takeScreenshot(view = rootView, screenshotFilename = "my_favorite_screenshot")
+ScreenCaptor.takeScreenshot(view = rootView, screenshotName = "my_favorite_screenshot")
 ```
 
 There are other configurations that you can pass in as well,
@@ -42,7 +42,7 @@ Here's an example of a complex screencaptor setup:
 ```kotlin
 ScreenCaptor.takeScreenshot(
   view = rootView,
-  screenshotFilename = "my_favorite_screenshot",
+  screenshotName = "my_favorite_screenshot",
   screenshotNameSuffix = "latest",
   viewModifiers = = setOf(TextViewDataModifier(R.id.date, "01/01/2000"))
   viewIdsToExclude = setOf(R.id.date, R.id.account_value),
