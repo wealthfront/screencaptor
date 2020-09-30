@@ -31,10 +31,11 @@ class ScreenCaptorTest {
   fun takeScreenshot_withoutDrawing() {
     try {
       ScreenCaptor.takeScreenshot(
-        rootViews = listOf(sampleView),
+        views = listOf(sampleView),
         screenshotName = "sample_screenshot",
         screenshotDirectory = folder.root.path
       )
+      assertThat(false).isTrue()
     } catch (illegalStateException: IllegalStateException) {
       assertThat(illegalStateException.message).contains("has no height or width")
       assertThat(illegalStateException.message).contains("currently displayed activity?")
