@@ -32,7 +32,7 @@ class ScreenCaptorTest {
     try {
       ScreenCaptor.takeScreenshot(
         rootViews = listOf(sampleView),
-        screenshotFilename = "sample_screenshot",
+        screenshotName = "sample_screenshot",
         screenshotDirectory = folder.root.path
       )
     } catch (illegalStateException: IllegalStateException) {
