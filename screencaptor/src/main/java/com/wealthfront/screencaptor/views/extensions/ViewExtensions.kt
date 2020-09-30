@@ -18,7 +18,7 @@ fun View.getAllChildren(): List<View> {
 
 fun View.getViewResourceName(): String {
   return try {
-    if (resources != null && id > 0) {
+    if (resources != null && !(id == 0 || id == -1)) {
       resources.getResourceName(id)
     } else {
       "${javaClass.simpleName}: No id"

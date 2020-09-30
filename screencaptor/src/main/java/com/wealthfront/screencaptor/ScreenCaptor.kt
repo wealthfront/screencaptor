@@ -105,6 +105,7 @@ object ScreenCaptor {
 
     val viewsField = globalWindowManager.javaClass.getDeclaredField("mViews")
       .apply { isAccessible = true }
+    @Suppress("UNCHECKED_CAST")
     return viewsField.get(globalWindowManager) as List<View>
   }
 
