@@ -45,7 +45,7 @@
           android:id="@+id/textView"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Sample data"
+          android:text="Some sample data which is really long, so long that it wraps to another line and maybe even three lines"
           tools:ignore="HardcodedText"
           />
 
