@@ -4,9 +4,13 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.widget.ImageView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
+import com.wealthfront.screencaptor.views.modifier.TextViewDataModifier
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -64,6 +68,8 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_activity() {
+    onView(withId(R.id.showToast)).perform(click())
+
     ScreenCaptor.takeScreenshot(
       activity = activityTestRule.activity,
       screenshotName = "screenshot_activity"
@@ -73,6 +79,22 @@ class ScreenshotTest {
       assertTrue(File(screenShotDirectory).exists())
       assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
       assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_activity") }!!.exists())
+    }
+  }
+
+  @Test
+  fun takeScreenshot_modify() {
+    ScreenCaptor.takeScreenshot(
+      activity = activityTestRule.activity,
+      screenshotName = "screenshot_change_text",
+      viewModifiers = setOf(TextViewDataModifier(R.id.textView, "Some shorter sample data"))
+    )
+
+    Espresso.onIdle {
+      assertTrue(File(screenShotDirectory).exists())
+      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
+      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_change_text") }!!.exists()
+      )
     }
   }
 

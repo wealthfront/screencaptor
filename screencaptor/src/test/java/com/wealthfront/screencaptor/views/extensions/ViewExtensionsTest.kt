@@ -21,7 +21,7 @@ class ViewExtensionsTest {
   @Test
   fun getAllChildren() {
     val children = sampleView.getAllChildren()
-    assertThat(children.count()).isEqualTo(7)
+    assertThat(children.count()).isEqualTo(8)
     assertThat(children[0]).isInstanceOf(LinearLayout::class.java)
     assertThat(children[1]).isInstanceOf(NestedScrollView::class.java)
     assertThat(children[2]).isInstanceOf(LinearLayout::class.java)

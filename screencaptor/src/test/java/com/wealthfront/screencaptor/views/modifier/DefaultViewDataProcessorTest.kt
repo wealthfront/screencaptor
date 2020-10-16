@@ -28,7 +28,7 @@ class DefaultViewDataProcessorTest {
 
   @Test
   fun modifyViews() {
-    assertThat(sampleView.findViewById<TextView>(R.id.textView).text).isEqualTo("Sample data")
+    assertThat(sampleView.findViewById<TextView>(R.id.textView).text).isEqualTo("Some sample data which is really long, so long that it wraps to another line and maybe even three lines")
     sampleView.findViewById<ImageView>(R.id.wealthfrontIcon).drawable.pixelsEqualTo(application.getDrawable(R.drawable.wf_logo))
 
     viewDataProcessor.modifyViews(sampleView, setOf(
@@ -57,7 +57,7 @@ class DefaultViewDataProcessorTest {
 
     viewDataProcessor.resetViews(sampleView, initialState)
 
-    assertThat(sampleView.findViewById<TextView>(R.id.textView).text).isEqualTo("Sample data")
+    assertThat(sampleView.findViewById<TextView>(R.id.textView).text).isEqualTo("Some sample data which is really long, so long that it wraps to another line and maybe even three lines")
     sampleView.findViewById<ImageView>(R.id.wealthfrontIcon).drawable.pixelsEqualTo(application.getDrawable(R.drawable.wf_logo))
   }
 }
