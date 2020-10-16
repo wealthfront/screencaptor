@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    tools:ignore="HardcodedText"
     >
 
   <androidx.core.widget.NestedScrollView
@@ -38,7 +39,7 @@
           android:inputType="text"
           android:textColorHint="#FFFFFF"
           android:gravity="center"
-          tools:ignore="Autofill,HardcodedText,LabelFor"
+          tools:ignore="Autofill,LabelFor"
           />
 
       <TextView
@@ -46,7 +47,6 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="Some sample data which is really long, so long that it wraps to another line and maybe even three lines"
-          tools:ignore="HardcodedText"
           />
 
       <ScrollView
@@ -54,6 +54,12 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           />
+
+      <Button
+          android:id="@+id/showToast"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Show toast"/>
 
     </LinearLayout>
 

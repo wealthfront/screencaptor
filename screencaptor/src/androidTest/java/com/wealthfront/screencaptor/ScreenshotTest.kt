@@ -4,6 +4,9 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.widget.ImageView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
@@ -65,6 +68,8 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_activity() {
+    onView(withId(R.id.showToast)).perform(click())
+
     ScreenCaptor.takeScreenshot(
       activity = activityTestRule.activity,
       screenshotName = "screenshot_activity"
