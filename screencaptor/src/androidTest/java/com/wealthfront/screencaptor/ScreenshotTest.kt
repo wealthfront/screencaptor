@@ -28,7 +28,7 @@ class ScreenshotTest {
 
   @After
   fun cleanUpScreenshots() {
-//    File(screenShotDirectory).deleteRecursively()
+    File(screenShotDirectory).deleteRecursively()
   }
 
   @Test
