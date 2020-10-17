@@ -84,6 +84,8 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_modify() {
+    onView(withId(R.id.showToast)).perform(click())
+
     ScreenCaptor.takeScreenshot(
       activity = activityTestRule.activity,
       screenshotName = "screenshot_change_text",
