@@ -243,14 +243,16 @@ object ScreenCaptor {
     val viewsToCapture = AtomicInteger(views.size)
     mainHandler.post {
       Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")
-      val initialStateOfViews = views.map { rootView ->
-        modifyViewBeforeScreenshot(
+      val initialStateOfViews = hashMapOf<View, ViewTreeState>()
+      views.forEach { rootView ->
+        val viewState = modifyViewBeforeScreenshot(
           rootView,
           viewDataProcessor,
           viewMutators,
           viewModifiers,
           viewIdsToExclude
         )
+        initialStateOfViews[rootView] = viewState
       }
 
       views.forEach { rootView ->
@@ -296,12 +298,12 @@ object ScreenCaptor {
   private fun resetViewTreeAfterScreenshot(
     viewDataProcessor: ViewDataProcessor,
     views: List<View>,
-    initialViewStates: List<ViewTreeState>,
+    initialViewStates: Map<View, ViewTreeState>,
     viewIdsToExclude: Set<Int>
   ) {
-    views.forEachIndexed { index, view ->
+    views.forEach { view ->
       Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
-      val initialViewState = initialViewStates[index]
+      val initialViewState = initialViewStates[view]!!
       ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialViewState.viewVisibilityStates)
       viewDataProcessor.resetViews(view, initialViewState.viewDataStates)
     }
