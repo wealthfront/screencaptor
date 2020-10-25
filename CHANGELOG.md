@@ -1,5 +1,11 @@
 Change Log
 ==========
+
+Version 1.1.1 *(2020-10-25)*
+----------------------------
+
+* Fix bug where the drawing happens before all the views are properly laid out
+
 Version 1.1.0 *(2020-09-30)*
 ----------------------------
 
