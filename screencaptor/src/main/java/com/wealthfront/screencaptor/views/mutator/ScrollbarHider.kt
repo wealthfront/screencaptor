@@ -1,6 +1,7 @@
 package com.wealthfront.screencaptor.views.mutator
 
 import android.view.View
+import android.widget.HorizontalScrollView
 import android.widget.ListView
 import android.widget.ScrollView
 import androidx.core.widget.NestedScrollView
@@ -13,6 +14,7 @@ object ScrollbarHider : ViewMutator {
 
   override fun typesToMutate(): Set<Class<out View>> = setOf(
       ScrollView::class.java,
+      HorizontalScrollView::class.java,
       NestedScrollView::class.java,
       ListView::class.java,
       RecyclerView::class.java
