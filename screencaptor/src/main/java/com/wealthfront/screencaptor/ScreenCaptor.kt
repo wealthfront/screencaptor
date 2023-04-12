@@ -1,6 +1,5 @@
 package com.wealthfront.screencaptor
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
@@ -37,6 +36,7 @@ object ScreenCaptor {
 
   private val mainHandler = Handler(Looper.getMainLooper())
   private val SCREENSHOT = javaClass.simpleName
+  private const val defaultScreenshotPath = "screenshots"
 
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
@@ -82,12 +82,12 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotDirectory: String = "/sdcard/screenshots",
+    screenshotPath: String = defaultScreenshotPath,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ) {
+  ): String {
     val rootViews = getRootViewsFromActivity(activity)
-    takeScreenshot(
+    return takeScreenshot(
       rootViews,
       screenshotName,
       screenshotNameSuffix,
@@ -95,7 +95,7 @@ object ScreenCaptor {
       viewModifiers,
       viewDataProcessor,
       viewMutators,
-      screenshotDirectory,
+      screenshotPath,
       screenshotFormat,
       screenshotQuality
     )
@@ -157,11 +157,11 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotDirectory: String = "/sdcard/screenshots",
+    screenshotPath: String = defaultScreenshotPath,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ) {
-    takeScreenshot(
+  ): String {
+    return takeScreenshot(
       listOf(view),
       screenshotName,
       screenshotNameSuffix,
@@ -169,7 +169,7 @@ object ScreenCaptor {
       viewModifiers,
       viewDataProcessor,
       viewMutators,
-      screenshotDirectory,
+      screenshotPath,
       screenshotFormat,
       screenshotQuality
     )
@@ -219,10 +219,10 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotDirectory: String = "/sdcard/screenshots",
+    screenshotPath: String = defaultScreenshotPath,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ) {
+  ): String {
     views.forEach { view ->
       Log.d(SCREENSHOT, "Root view has height(${view.height}) and width(${view.width})")
       if (view.width == 0 || view.height == 0) {
@@ -230,12 +230,11 @@ object ScreenCaptor {
       }
     }
 
-    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
-    val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFilePath = "$screenshotDirectory/$screenshotId.${screenshotFormat.extension}"
-    if (!File(screenshotDirectory).exists()) {
-      Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
+    val externalMediaDirectory = views.first().context.externalMediaDirs.first().absolutePath
+    val screenshotMediaDirectory = "$externalMediaDirectory/$screenshotPath"
+    if (!File(screenshotMediaDirectory).exists()) {
+      Log.d(SCREENSHOT, "Creating directory $screenshotMediaDirectory since it does not exist")
+      val screenshotDirsCreated = File(screenshotMediaDirectory).mkdirs()
       assert(screenshotDirsCreated)
     }
 
@@ -243,6 +242,10 @@ object ScreenCaptor {
     val canvas = Canvas(bitmap)
 
     val viewsToCapture = AtomicInteger(views.size)
+    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
+    val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
+    val screenshotFilePath = "$screenshotMediaDirectory/$screenshotId.${screenshotFormat.extension}"
+
     mainHandler.post {
       Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")
       val initialStateOfViews = hashMapOf<View, ViewTreeState>()
@@ -270,12 +273,13 @@ object ScreenCaptor {
               initialStateOfViews,
               viewIdsToExclude
             )
-
             storeScreenshot(bitmap, screenshotFilePath, screenshotFormat, screenshotQuality)
           }
         }
       }
     }
+
+    return screenshotFilePath
   }
 
   private fun modifyViewBeforeScreenshot(
