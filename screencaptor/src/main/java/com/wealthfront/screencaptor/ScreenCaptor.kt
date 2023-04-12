@@ -1,5 +1,6 @@
 package com.wealthfront.screencaptor
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
@@ -234,7 +235,8 @@ object ScreenCaptor {
     val screenshotFilePath = "$screenshotDirectory/$screenshotId.${screenshotFormat.extension}"
     if (!File(screenshotDirectory).exists()) {
       Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-      File(screenshotDirectory).mkdirs()
+      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
+      assert(screenshotDirsCreated)
     }
 
     val bitmap = createCanvasBitmap(views)
