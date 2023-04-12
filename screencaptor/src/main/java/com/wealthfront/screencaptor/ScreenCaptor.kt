@@ -230,11 +230,9 @@ object ScreenCaptor {
       }
     }
 
-    val externalMediaDirectory = views.first().context.externalMediaDirs.first().absolutePath
-    val screenshotMediaDirectory = "$externalMediaDirectory/$screenshotPath"
-    if (!File(screenshotMediaDirectory).exists()) {
-      Log.d(SCREENSHOT, "Creating directory $screenshotMediaDirectory since it does not exist")
-      val screenshotDirsCreated = File(screenshotMediaDirectory).mkdirs()
+    if (!File(screenshotPath).exists()) {
+      Log.d(SCREENSHOT, "Creating directory $screenshotPath since it does not exist")
+      val screenshotDirsCreated = File(screenshotPath).mkdirs()
       assert(screenshotDirsCreated)
     }
 
@@ -244,7 +242,7 @@ object ScreenCaptor {
     val viewsToCapture = AtomicInteger(views.size)
     val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
     val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFilePath = "$screenshotMediaDirectory/$screenshotId.${screenshotFormat.extension}"
+    val screenshotFilePath = "$screenshotPath/$screenshotId.${screenshotFormat.extension}"
 
     mainHandler.post {
       Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")

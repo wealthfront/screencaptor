@@ -37,6 +37,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.0")
 
     testImplementation("org.robolectric:robolectric:4.10")
+    testImplementation("androidx.test:core:1.4.0")
+    testImplementation("androidx.test:core-ktx:1.4.0")
     testImplementation("org.mockito:mockito-core:2.23.4")
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.google.truth:truth:1.0")
