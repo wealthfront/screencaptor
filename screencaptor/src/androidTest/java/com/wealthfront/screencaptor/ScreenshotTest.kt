@@ -41,7 +41,7 @@ class ScreenshotTest {
       ScreenCaptor.takeScreenshot(
         view = activity.window.decorView,
         screenshotName = "screenshot_view",
-        screenshotPath = screenShotDirectory
+        screenshotDirectory = screenShotDirectory
       )
     }
 
@@ -59,7 +59,7 @@ class ScreenshotTest {
       ScreenCaptor.takeScreenshot(
         views = listOf(imageView),
         screenshotName = "screenshot_views",
-        screenshotPath = screenShotDirectory
+        screenshotDirectory = screenShotDirectory
       )
     }
 
@@ -78,7 +78,7 @@ class ScreenshotTest {
       ScreenCaptor.takeScreenshot(
         activity = activity,
         screenshotName = "screenshot_activity",
-        screenshotPath = screenShotDirectory
+        screenshotDirectory = screenShotDirectory
       )
     }
 
@@ -98,7 +98,7 @@ class ScreenshotTest {
         activity = activity,
         screenshotName = "screenshot_change_text",
         viewModifiers = setOf(TextViewDataModifier(R.id.textView, "Some shorter sample data")),
-        screenshotPath = screenShotDirectory
+        screenshotDirectory = screenShotDirectory
       )
     }
 
@@ -117,7 +117,7 @@ class ScreenshotTest {
         activity = activity,
         screenshotName = "screenshot_no_logo",
         viewIdsToExclude = setOf(R.id.wealthfrontIcon),
-        screenshotPath = screenShotDirectory
+        screenshotDirectory = screenShotDirectory
       )
     }
 

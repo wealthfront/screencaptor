@@ -37,7 +37,7 @@ class ScreenCaptorTest {
     ScreenCaptor.takeScreenshot(
       views = listOf(sampleView),
       screenshotName = "sample_screenshot",
-      screenshotPath = folder.root.path
+      screenshotDirectory = folder.root.path
     )
   }
 
@@ -49,7 +49,7 @@ class ScreenCaptorTest {
       ScreenCaptor.takeScreenshot(
         views = listOf(sampleView),
         screenshotName = "sample_screenshot",
-        screenshotPath = folder.root.path
+        screenshotDirectory = folder.root.path
       )
       assertThat(false).isTrue()
     } catch (illegalStateException: IllegalStateException) {

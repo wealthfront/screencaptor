@@ -36,7 +36,7 @@ object ScreenCaptor {
 
   private val mainHandler = Handler(Looper.getMainLooper())
   private val SCREENSHOT = javaClass.simpleName
-  private const val defaultScreenshotPath = "screenshots"
+  private const val defaultScreenshotDirectory = "screenshots"
 
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
@@ -82,7 +82,7 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotPath: String = defaultScreenshotPath,
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ): String {
@@ -95,7 +95,7 @@ object ScreenCaptor {
       viewModifiers,
       viewDataProcessor,
       viewMutators,
-      screenshotPath,
+      screenshotDirectory,
       screenshotFormat,
       screenshotQuality
     )
@@ -157,7 +157,7 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotPath: String = defaultScreenshotPath,
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ): String {
@@ -169,7 +169,7 @@ object ScreenCaptor {
       viewModifiers,
       viewDataProcessor,
       viewMutators,
-      screenshotPath,
+      screenshotDirectory,
       screenshotFormat,
       screenshotQuality
     )
@@ -219,7 +219,7 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotPath: String = defaultScreenshotPath,
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ): String {
@@ -230,9 +230,9 @@ object ScreenCaptor {
       }
     }
 
-    if (!File(screenshotPath).exists()) {
-      Log.d(SCREENSHOT, "Creating directory $screenshotPath since it does not exist")
-      val screenshotDirsCreated = File(screenshotPath).mkdirs()
+    if (!File(screenshotDirectory).exists()) {
+      Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
+      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
       assert(screenshotDirsCreated)
     }
 
@@ -242,7 +242,7 @@ object ScreenCaptor {
     val viewsToCapture = AtomicInteger(views.size)
     val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
     val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFilePath = "$screenshotPath/$screenshotId.${screenshotFormat.extension}"
+    val screenshotFilePath = "$screenshotDirectory/$screenshotId.${screenshotFormat.extension}"
 
     mainHandler.post {
       Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")
@@ -329,8 +329,8 @@ object ScreenCaptor {
   }
 
   private fun createCanvasBitmap(rootViews: List<View>): Bitmap {
-    val canvasWidth = rootViews.maxBy { it.width }!!.width
-    val canvasHeight = rootViews.maxBy { it.height }!!.height
+    val canvasWidth = rootViews.maxBy { it.width }.width
+    val canvasHeight = rootViews.maxBy { it.height }.height
     return Bitmap.createBitmap(canvasWidth, canvasHeight, ARGB_8888)
   }
 }
