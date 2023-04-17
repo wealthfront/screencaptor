@@ -7,8 +7,9 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
 import com.wealthfront.screencaptor.views.modifier.TextViewDataModifier
 import org.junit.After
@@ -21,10 +22,10 @@ import java.io.File
 @RunWith(AndroidJUnit4::class)
 class ScreenshotTest {
 
-  private val screenShotDirectory = "/sdcard/screenshots/"
+  private val screenShotDirectory: String = "${getInstrumentation().targetContext.externalMediaDirs.first().absolutePath}/screenshots"
 
   @get:Rule
-  var activityTestRule : ActivityTestRule<SampleActivity> = ActivityTestRule(SampleActivity::class.java)
+  var activityTestRule : ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
 
   @get:Rule
   var permissionsRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
@@ -36,12 +37,13 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_view() {
-    val rootView = activityTestRule.activity.window.decorView
-
-    ScreenCaptor.takeScreenshot(
-      view = rootView,
-      screenshotName = "screenshot_view"
-    )
+    activityTestRule.scenario.onActivity { activity ->
+      ScreenCaptor.takeScreenshot(
+        view = activity.window.decorView,
+        screenshotName = "screenshot_view",
+        screenshotDirectory = screenShotDirectory
+      )
+    }
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
@@ -52,12 +54,14 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_views() {
-    val imageView = activityTestRule.activity.findViewById<ImageView>(R.id.wealthfrontIcon)
-
-    ScreenCaptor.takeScreenshot(
-      views = listOf(imageView),
-      screenshotName = "screenshot_views"
-    )
+    activityTestRule.scenario.onActivity { activity ->
+      val imageView = activity.findViewById<ImageView>(R.id.wealthfrontIcon)
+      ScreenCaptor.takeScreenshot(
+        views = listOf(imageView),
+        screenshotName = "screenshot_views",
+        screenshotDirectory = screenShotDirectory
+      )
+    }
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
@@ -70,10 +74,13 @@ class ScreenshotTest {
   fun takeScreenshot_activity() {
     onView(withId(R.id.showToast)).perform(click())
 
-    ScreenCaptor.takeScreenshot(
-      activity = activityTestRule.activity,
-      screenshotName = "screenshot_activity"
-    )
+    activityTestRule.scenario.onActivity { activity ->
+      ScreenCaptor.takeScreenshot(
+        activity = activity,
+        screenshotName = "screenshot_activity",
+        screenshotDirectory = screenShotDirectory
+      )
+    }
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
@@ -86,11 +93,14 @@ class ScreenshotTest {
   fun takeScreenshot_modify() {
     onView(withId(R.id.showToast)).perform(click())
 
-    ScreenCaptor.takeScreenshot(
-      activity = activityTestRule.activity,
-      screenshotName = "screenshot_change_text",
-      viewModifiers = setOf(TextViewDataModifier(R.id.textView, "Some shorter sample data"))
-    )
+    activityTestRule.scenario.onActivity { activity ->
+      ScreenCaptor.takeScreenshot(
+        activity = activity,
+        screenshotName = "screenshot_change_text",
+        viewModifiers = setOf(TextViewDataModifier(R.id.textView, "Some shorter sample data")),
+        screenshotDirectory = screenShotDirectory
+      )
+    }
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
@@ -102,11 +112,14 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_exclude() {
-    ScreenCaptor.takeScreenshot(
-      activity = activityTestRule.activity,
-      screenshotName = "screenshot_no_logo",
-      viewIdsToExclude = setOf(R.id.wealthfrontIcon)
-    )
+    activityTestRule.scenario.onActivity { activity ->
+      ScreenCaptor.takeScreenshot(
+        activity = activity,
+        screenshotName = "screenshot_no_logo",
+        viewIdsToExclude = setOf(R.id.wealthfrontIcon),
+        screenshotDirectory = screenShotDirectory
+      )
+    }
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())

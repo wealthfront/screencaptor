@@ -36,6 +36,7 @@ object ScreenCaptor {
 
   private val mainHandler = Handler(Looper.getMainLooper())
   private val SCREENSHOT = javaClass.simpleName
+  private const val defaultScreenshotDirectory = "screenshots"
 
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
@@ -81,12 +82,12 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotDirectory: String = "/sdcard/screenshots",
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ) {
+  ): String {
     val rootViews = getRootViewsFromActivity(activity)
-    takeScreenshot(
+    return takeScreenshot(
       rootViews,
       screenshotName,
       screenshotNameSuffix,
@@ -156,11 +157,11 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotDirectory: String = "/sdcard/screenshots",
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ) {
-    takeScreenshot(
+  ): String {
+    return takeScreenshot(
       listOf(view),
       screenshotName,
       screenshotNameSuffix,
@@ -218,10 +219,10 @@ object ScreenCaptor {
     viewModifiers: Set<DataModifier> = setOf(),
     viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
-    screenshotDirectory: String = "/sdcard/screenshots",
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ) {
+  ): String {
     views.forEach { view ->
       Log.d(SCREENSHOT, "Root view has height(${view.height}) and width(${view.width})")
       if (view.width == 0 || view.height == 0) {
@@ -229,18 +230,20 @@ object ScreenCaptor {
       }
     }
 
-    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
-    val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFilePath = "$screenshotDirectory/$screenshotId.${screenshotFormat.extension}"
     if (!File(screenshotDirectory).exists()) {
       Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-      File(screenshotDirectory).mkdirs()
+      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
+      assert(screenshotDirsCreated)
     }
 
     val bitmap = createCanvasBitmap(views)
     val canvas = Canvas(bitmap)
 
     val viewsToCapture = AtomicInteger(views.size)
+    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
+    val screenshotId = "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
+    val screenshotFilePath = "$screenshotDirectory/$screenshotId.${screenshotFormat.extension}"
+
     mainHandler.post {
       Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")
       val initialStateOfViews = hashMapOf<View, ViewTreeState>()
@@ -268,12 +271,13 @@ object ScreenCaptor {
               initialStateOfViews,
               viewIdsToExclude
             )
-
             storeScreenshot(bitmap, screenshotFilePath, screenshotFormat, screenshotQuality)
           }
         }
       }
     }
+
+    return screenshotFilePath
   }
 
   private fun modifyViewBeforeScreenshot(
@@ -325,8 +329,8 @@ object ScreenCaptor {
   }
 
   private fun createCanvasBitmap(rootViews: List<View>): Bitmap {
-    val canvasWidth = rootViews.maxBy { it.width }!!.width
-    val canvasHeight = rootViews.maxBy { it.height }!!.height
+    val canvasWidth = rootViews.maxBy { it.width }.width
+    val canvasHeight = rootViews.maxBy { it.height }.height
     return Bitmap.createBitmap(canvasWidth, canvasHeight, ARGB_8888)
   }
 }
