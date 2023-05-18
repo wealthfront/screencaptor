@@ -1,9 +1,9 @@
 package com.wealthfront.screencaptor
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 
 class SampleActivity : Activity() {
 

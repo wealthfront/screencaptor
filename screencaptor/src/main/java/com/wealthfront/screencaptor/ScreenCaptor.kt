@@ -25,7 +25,6 @@ import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import java.io.File
 import java.util.Locale.ENGLISH
 
-
 /**
  * Has the ability to take a screenshot of the current view displayed on the screen using the method [takeScreenshot].
  */

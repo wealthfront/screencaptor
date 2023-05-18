@@ -13,8 +13,8 @@
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
-      android:scrollbars="vertical"
       android:background="#4B0082"
+      android:scrollbars="vertical"
       >
 
     <LinearLayout
@@ -27,18 +27,18 @@
           android:id="@+id/wealthfrontIcon"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:src="@drawable/wf_logo"
           android:padding="40dp"
-        />
+          android:src="@drawable/wf_logo"
+          />
 
       <EditText
           android:id="@+id/textField"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
+          android:gravity="center"
           android:hint="Welcome to Wealthfront!!!"
           android:inputType="text"
           android:textColorHint="#FFFFFF"
-          android:gravity="center"
           tools:ignore="Autofill,LabelFor"
           />
 
@@ -59,7 +59,8 @@
           android:id="@+id/showDialog"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Show dialog"/>
+          android:text="Show dialog"
+          />
 
     </LinearLayout>
 

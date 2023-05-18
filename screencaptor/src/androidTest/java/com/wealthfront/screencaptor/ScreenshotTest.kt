@@ -1,7 +1,5 @@
 package com.wealthfront.screencaptor
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Environment
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -10,7 +8,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.rule.GrantPermissionRule
 import com.wealthfront.screencaptor.views.modifier.TextViewDataModifier
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -22,13 +19,11 @@ import java.io.File
 @RunWith(AndroidJUnit4::class)
 class ScreenshotTest {
 
-  private val screenShotDirectory: String = "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
+  private val screenShotDirectory: String =
+    "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
 
   @get:Rule
-  var activityTestRule : ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
-
-  @get:Rule
-  var permissionsRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+  var activityTestRule: ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
 
   @After
   fun cleanUpScreenshots() {
@@ -68,7 +63,8 @@ class ScreenshotTest {
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
       assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_change_text") }!!.exists()
+      assertTrue(
+        File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_change_text") }!!.exists()
       )
     }
   }

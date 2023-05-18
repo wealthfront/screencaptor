@@ -35,7 +35,7 @@ class ScreenCaptorTest {
     activity.addContentView(sampleView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
     shadowOf(getMainLooper()).idle()
     ScreenCaptor.takeScreenshot(
-      views = listOf(sampleView),
+      activity = activity,
       screenshotName = "sample_screenshot",
       screenshotDirectory = folder.root.path
     )
@@ -44,10 +44,10 @@ class ScreenCaptorTest {
   @Test
   fun takeScreenshot_withoutDrawing() {
     val activity = activityController.create().get()
-    val sampleView = LayoutInflater.from(activity).inflate(R.layout.screenshot_test, null) as ViewGroup
+    LayoutInflater.from(activity).inflate(R.layout.screenshot_test, null) as ViewGroup
     try {
       ScreenCaptor.takeScreenshot(
-        views = listOf(sampleView),
+        activity = activity,
         screenshotName = "sample_screenshot",
         screenshotDirectory = folder.root.path
       )
