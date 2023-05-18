@@ -35,6 +35,7 @@ dependencies {
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.appCompat)
     implementation(Dependencies.recyclerView)
+    implementation("eu.bolt:screenshotty:1.0.4")
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)

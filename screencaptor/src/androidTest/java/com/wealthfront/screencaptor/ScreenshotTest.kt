@@ -2,7 +2,7 @@ package com.wealthfront.screencaptor
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.widget.ImageView
+import android.os.Environment
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -22,7 +22,7 @@ import java.io.File
 @RunWith(AndroidJUnit4::class)
 class ScreenshotTest {
 
-  private val screenShotDirectory: String = "${getInstrumentation().targetContext.externalMediaDirs.first().absolutePath}/screenshots"
+  private val screenShotDirectory: String = "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
 
   @get:Rule
   var activityTestRule : ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
@@ -36,48 +36,13 @@ class ScreenshotTest {
   }
 
   @Test
-  fun takeScreenshot_view() {
-    activityTestRule.scenario.onActivity { activity ->
-      ScreenCaptor.takeScreenshot(
-        view = activity.window.decorView,
-        screenshotName = "screenshot_view",
-        screenshotDirectory = screenShotDirectory
-      )
-    }
-
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_view") }!!.exists())
-    }
-  }
-
-  @Test
-  fun takeScreenshot_views() {
-    activityTestRule.scenario.onActivity { activity ->
-      val imageView = activity.findViewById<ImageView>(R.id.wealthfrontIcon)
-      ScreenCaptor.takeScreenshot(
-        views = listOf(imageView),
-        screenshotName = "screenshot_views",
-        screenshotDirectory = screenShotDirectory
-      )
-    }
-
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_views") }!!.exists())
-    }
-  }
-
-  @Test
-  fun takeScreenshot_activity() {
-    onView(withId(R.id.showToast)).perform(click())
+  fun takeScreenshot_dialog() {
+    onView(withId(R.id.showDialog)).perform(click())
 
     activityTestRule.scenario.onActivity { activity ->
       ScreenCaptor.takeScreenshot(
         activity = activity,
-        screenshotName = "screenshot_activity",
+        screenshotName = "screenshot_dialog",
         screenshotDirectory = screenShotDirectory
       )
     }
@@ -85,14 +50,12 @@ class ScreenshotTest {
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
       assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_activity") }!!.exists())
+      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_dialog") }!!.exists())
     }
   }
 
   @Test
   fun takeScreenshot_modify() {
-    onView(withId(R.id.showToast)).perform(click())
-
     activityTestRule.scenario.onActivity { activity ->
       ScreenCaptor.takeScreenshot(
         activity = activity,
