@@ -29,23 +29,39 @@ android {
             isReturnDefaultValues = true
         }
     }
+
+    sourceSets {
+        this.getByName("androidTest"){
+            this.java.srcDir("src/sharedTest/java")
+            this.manifest.srcFile("src/sharedTest/AndroidManifest.xml")
+        }
+        this.getByName("test"){
+            this.java.srcDir("src/sharedTest/java")
+            this.manifest.srcFile("src/sharedTest/AndroidManifest.xml")
+        }
+    }
 }
 
 dependencies {
-    implementation(Dependencies.kotlinStdLib)
-    implementation(Dependencies.appCompat)
     implementation(Dependencies.recyclerView)
-    implementation("eu.bolt:screenshotty:1.0.4")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    // api("eu.bolt:screenshotty:1.0.4")
+    // api("eu.bolt:screenshotty-rx:1.0.4")
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)
     testImplementation(Dependencies.testCoreKtx)
-    testImplementation(Dependencies.mockitoCore)
     testImplementation(Dependencies.junit)
     testImplementation(Dependencies.truth)
+    testImplementation(Dependencies.espressoCore)
+    testImplementation(Dependencies.testRules)
+    testImplementation(Dependencies.testExtJunit)
+    testImplementation("com.squareup.rx.idler:rx2-idler:0.11.0")
 
     androidTestImplementation(Dependencies.junit)
     androidTestImplementation(Dependencies.testExtJunit)
     androidTestImplementation(Dependencies.testRules)
     androidTestImplementation(Dependencies.espressoCore)
+    androidTestImplementation("com.squareup.rx.idler:rx2-idler:0.11.0")
 }

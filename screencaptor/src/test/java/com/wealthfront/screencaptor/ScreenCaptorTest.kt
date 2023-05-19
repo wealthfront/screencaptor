@@ -37,8 +37,9 @@ class ScreenCaptorTest {
     ScreenCaptor.takeScreenshot(
       activity = activity,
       screenshotName = "sample_screenshot",
-      screenshotDirectory = folder.root.path
-    )
+      screenshotDirectory = folder.root.path,
+      onSuccess = {}
+    ) {}
   }
 
   @Test
@@ -49,8 +50,9 @@ class ScreenCaptorTest {
       ScreenCaptor.takeScreenshot(
         activity = activity,
         screenshotName = "sample_screenshot",
-        screenshotDirectory = folder.root.path
-      )
+        screenshotDirectory = folder.root.path,
+        onSuccess = {}
+      ) {}
       assertThat(false).isTrue()
     } catch (illegalStateException: IllegalStateException) {
       assertThat(illegalStateException.message).contains("has no height or width")

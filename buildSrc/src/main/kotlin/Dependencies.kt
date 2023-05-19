@@ -1,7 +1,6 @@
 import Versions.appCompatVersion
 import Versions.junitVersion
 import Versions.kotlinVersion
-import Versions.mockitoCoreVersion
 import Versions.recyclerViewVersion
 import Versions.robolectricVersion
 import Versions.testCoreVersion
@@ -20,7 +19,6 @@ object Dependencies {
     const val robolectric = "org.robolectric:robolectric:$robolectricVersion"
     const val testCore = "androidx.test:core:$testCoreVersion"
     const val testCoreKtx = "androidx.test:core-ktx:$testCoreVersion"
-    const val mockitoCore = "org.mockito:mockito-core:$mockitoCoreVersion"
     const val junit = "junit:junit:$junitVersion"
     const val truth = "com.google.truth:truth:$truthVersion"
 
