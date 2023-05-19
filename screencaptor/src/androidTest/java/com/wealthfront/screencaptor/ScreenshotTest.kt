@@ -25,7 +25,7 @@ class ScreenshotTest {
   private val screenShotDirectory: String = "${getInstrumentation().targetContext.externalMediaDirs.first().absolutePath}/screenshots"
 
   @get:Rule
-  var activityTestRule : ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
+  var activityTestRule: ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
 
   @get:Rule
   var permissionsRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
@@ -72,7 +72,7 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_activity() {
-    onView(withId(R.id.showToast)).perform(click())
+    onView(withId(R.id.showDialog)).perform(click())
 
     activityTestRule.scenario.onActivity { activity ->
       ScreenCaptor.takeScreenshot(
@@ -91,7 +91,7 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_modify() {
-    onView(withId(R.id.showToast)).perform(click())
+    onView(withId(R.id.showDialog)).perform(click())
 
     activityTestRule.scenario.onActivity { activity ->
       ScreenCaptor.takeScreenshot(
@@ -105,7 +105,8 @@ class ScreenshotTest {
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
       assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_change_text") }!!.exists()
+      assertTrue(
+        File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_change_text") }!!.exists()
       )
     }
   }
