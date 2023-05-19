@@ -29,19 +29,30 @@ android {
             isReturnDefaultValues = true
         }
     }
+
+    sourceSets {
+        this.getByName("androidTest"){
+            this.java.srcDir("src/sharedTest/java")
+            this.manifest.srcFile("src/sharedTest/AndroidManifest.xml")
+        }
+        this.getByName("test"){
+            this.java.srcDir("src/sharedTest/java")
+            this.manifest.srcFile("src/sharedTest/AndroidManifest.xml")
+        }
+    }
 }
 
 dependencies {
-    implementation(Dependencies.kotlinStdLib)
-    implementation(Dependencies.appCompat)
     implementation(Dependencies.recyclerView)
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)
     testImplementation(Dependencies.testCoreKtx)
-    testImplementation(Dependencies.mockitoCore)
     testImplementation(Dependencies.junit)
     testImplementation(Dependencies.truth)
+    testImplementation(Dependencies.espressoCore)
+    testImplementation(Dependencies.testRules)
+    testImplementation(Dependencies.testExtJunit)
 
     androidTestImplementation(Dependencies.junit)
     androidTestImplementation(Dependencies.testExtJunit)

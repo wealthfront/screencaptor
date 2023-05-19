@@ -56,7 +56,7 @@
           />
 
       <Button
-          android:id="@+id/showToast"
+          android:id="@+id/showDialog"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="Show toast"/>
