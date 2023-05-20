@@ -111,7 +111,7 @@ object ScreenCaptor {
     }
 
     val screenshotManager = ScreenshotManagerBuilder(activity)
-      .withCustomActionOrder(ScreenshotActionOrder.pixelCopyFirst())
+      .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
       .build()
 
     return screenshotManager.makeScreenshot()

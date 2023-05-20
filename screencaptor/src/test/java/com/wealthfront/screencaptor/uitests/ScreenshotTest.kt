@@ -1,6 +1,7 @@
-package com.wealthfront.screencaptor.uitest
+package com.wealthfront.screencaptor.uitests
 
 import androidx.test.core.app.launchActivity
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -9,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.wealthfront.screencaptor.R
 import com.wealthfront.screencaptor.SampleActivity
 import com.wealthfront.screencaptor.ScreenCaptor
-import com.wealthfront.screencaptor.views.modifier.TextViewDataModifier
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -22,7 +22,7 @@ import java.io.File
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ScreenshotTest {
 
-  private val screenShotDirectory: String = "sdcard/screenshots"
+  private val screenShotDirectory: String = "build/test-results/screenshots"
 
   @get:Rule
   var activityTestRule: ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
@@ -37,6 +37,8 @@ class ScreenshotTest {
     onView(withId(R.id.showDialog)).perform(click())
 
     val activityScenario = launchActivity<SampleActivity>()
+
+    Espresso.onIdle()
     activityScenario.onActivity { activity ->
       ScreenCaptor.takeScreenshot(
         activity = activity,
@@ -45,38 +47,8 @@ class ScreenshotTest {
       )
     }
 
-    assertTrue(File(screenShotDirectory).exists())
-  }
-
-  @Test
-  fun takeScreenshot_modify() {
-    activityTestRule.scenario.onActivity { activity ->
-      ScreenCaptor.takeScreenshot(
-        activity = activity,
-        screenshotName = "screenshot_change_text",
-        viewModifiers = setOf(TextViewDataModifier(R.id.textView, "Some shorter sample data")),
-        screenshotDirectory = screenShotDirectory,
-        onSuccess = {},
-        onError = {}
-      )
+    Espresso.onIdle {
+      assertTrue(File(screenShotDirectory).exists())
     }
-
-    assertTrue(File(screenShotDirectory).exists())
-  }
-
-  @Test
-  fun takeScreenshot_exclude() {
-    activityTestRule.scenario.onActivity { activity ->
-      ScreenCaptor.takeScreenshot(
-        activity = activity,
-        screenshotName = "screenshot_no_logo",
-        viewIdsToExclude = setOf(R.id.wealthfrontIcon),
-        screenshotDirectory = screenShotDirectory,
-        onSuccess = {},
-        onError = {}
-      )
-    }
-
-    assertTrue(File(screenShotDirectory).exists())
   }
 }

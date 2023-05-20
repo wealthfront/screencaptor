@@ -1,6 +1,5 @@
-import Versions.appCompatVersion
+
 import Versions.junitVersion
-import Versions.kotlinVersion
 import Versions.recyclerViewVersion
 import Versions.robolectricVersion
 import Versions.testCoreVersion
@@ -12,8 +11,6 @@ object Plugins {
 }
 
 object Dependencies {
-    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    const val appCompat = "androidx.appcompat:appcompat:$appCompatVersion"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
 
     const val robolectric = "org.robolectric:robolectric:$robolectricVersion"

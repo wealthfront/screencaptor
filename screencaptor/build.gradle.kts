@@ -44,10 +44,6 @@ android {
 
 dependencies {
     implementation(Dependencies.recyclerView)
-    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
-    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-    // api("eu.bolt:screenshotty:1.0.4")
-    // api("eu.bolt:screenshotty-rx:1.0.4")
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)
@@ -57,11 +53,9 @@ dependencies {
     testImplementation(Dependencies.espressoCore)
     testImplementation(Dependencies.testRules)
     testImplementation(Dependencies.testExtJunit)
-    testImplementation("com.squareup.rx.idler:rx2-idler:0.11.0")
 
     androidTestImplementation(Dependencies.junit)
     androidTestImplementation(Dependencies.testExtJunit)
     androidTestImplementation(Dependencies.testRules)
     androidTestImplementation(Dependencies.espressoCore)
-    androidTestImplementation("com.squareup.rx.idler:rx2-idler:0.11.0")
 }

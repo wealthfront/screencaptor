@@ -1,5 +1,7 @@
 package com.wealthfront.screencaptor
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Environment
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -8,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.rule.GrantPermissionRule
 import com.wealthfront.screencaptor.views.modifier.TextViewDataModifier
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -24,6 +27,9 @@ class ScreenshotTest {
 
   @get:Rule
   var activityTestRule: ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
+
+  @get:Rule
+  var permissionsRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
 
   @After
   fun cleanUpScreenshots() {
