@@ -18,7 +18,6 @@ import com.wealthfront.screencaptor.views.mutator.CursorHider
 import com.wealthfront.screencaptor.views.mutator.ScrollbarHider
 import com.wealthfront.screencaptor.views.mutator.ViewMutator
 import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
-import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.ScreenshotResult
@@ -82,9 +81,7 @@ object ScreenCaptor {
     viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
     screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
-    screenshotQuality: ScreenshotQuality = BEST,
-    onSuccess: (Screenshot) -> Unit = { },
-    onError: (Throwable) -> Unit = { }
+    screenshotQuality: ScreenshotQuality = BEST
   ): ScreenshotResult.Subscription {
     if (!File(screenshotDirectory).exists()) {
       Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
@@ -130,9 +127,8 @@ object ScreenCaptor {
             initialStateOfViews,
             viewIdsToExclude
           )
-          onSuccess(screenshot)
         }
-      }, onError)
+      }, { throwable -> throw throwable })
   }
 
   private fun modifyViewBeforeScreenshot(

@@ -16,7 +16,6 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 
-@Suppress("DEPRECATION")
 @RunWith(RobolectricTestRunner::class)
 class ScreenCaptorTest {
 
@@ -37,9 +36,8 @@ class ScreenCaptorTest {
     ScreenCaptor.takeScreenshot(
       activity = activity,
       screenshotName = "sample_screenshot",
-      screenshotDirectory = folder.root.path,
-      onSuccess = {}
-    ) {}
+      screenshotDirectory = folder.root.path
+    )
   }
 
   @Test
@@ -50,9 +48,8 @@ class ScreenCaptorTest {
       ScreenCaptor.takeScreenshot(
         activity = activity,
         screenshotName = "sample_screenshot",
-        screenshotDirectory = folder.root.path,
-        onSuccess = {}
-      ) {}
+        screenshotDirectory = folder.root.path
+      )
       assertThat(false).isTrue()
     } catch (illegalStateException: IllegalStateException) {
       assertThat(illegalStateException.message).contains("has no height or width")

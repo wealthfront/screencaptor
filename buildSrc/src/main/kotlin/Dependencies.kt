@@ -2,6 +2,7 @@
 import Versions.junitVersion
 import Versions.recyclerViewVersion
 import Versions.robolectricVersion
+import Versions.screenshottyVersion
 import Versions.testCoreVersion
 import Versions.truthVersion
 
@@ -12,6 +13,7 @@ object Plugins {
 
 object Dependencies {
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    const val screenshotty = "eu.bolt:screenshotty:$screenshottyVersion"
 
     const val robolectric = "org.robolectric:robolectric:$robolectricVersion"
     const val testCore = "androidx.test:core:$testCoreVersion"

@@ -7,6 +7,7 @@ object Versions {
 
   const val kotlinVersion = "1.7.21"
   const val recyclerViewVersion = "1.2.1"
+  const val screenshottyVersion = "1.0.4"
 
   const val robolectricVersion = "4.10.3"
   const val testCoreVersion = "1.5.0"
