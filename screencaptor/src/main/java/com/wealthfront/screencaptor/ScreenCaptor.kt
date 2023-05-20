@@ -97,6 +97,10 @@ object ScreenCaptor {
     val initialStateOfViews = hashMapOf<View, ViewTreeState>()
     getRootViewsFromActivity(activity).forEach { rootView ->
       Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")
+      if (rootView.width == 0 || rootView.height == 0) {
+        throw IllegalStateException("This view ($rootView) has no height or width. Is ${rootView.id} the currently displayed activity?")
+      }
+
       val viewState = modifyViewBeforeScreenshot(
         rootView,
         viewDataProcessor,
