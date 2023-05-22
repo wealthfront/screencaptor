@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(Dependencies.recyclerView)
+    implementation(Dependencies.screenshotty)
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)
