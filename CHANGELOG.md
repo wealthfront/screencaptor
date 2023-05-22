@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.2.0 *(2023-04-19)*
+----------------------------
+
+* Use [screenshotty](https://github.com/bolteu/screenshotty) for rendering
+
 Version 1.1.2 *(2023-04-19)*
 ----------------------------
 
