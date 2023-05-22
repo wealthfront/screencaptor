@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
@@ -20,7 +22,6 @@ import com.wealthfront.screencaptor.views.mutator.ViewMutator
 import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
-import eu.bolt.screenshotty.ScreenshotResult
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import java.io.File
 import java.util.Locale.ENGLISH
@@ -32,6 +33,7 @@ object ScreenCaptor {
 
   data class ViewTreeState(val viewVisibilityStates: Map<Int, Int>, val viewDataStates: Set<DataModifier>)
 
+  private val mainHandler = Handler(Looper.getMainLooper())
   private val SCREENSHOT = javaClass.simpleName
   private const val defaultScreenshotDirectory = "screenshots"
 
@@ -82,7 +84,7 @@ object ScreenCaptor {
     screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
-  ): ScreenshotResult.Subscription {
+  ) {
     if (!File(screenshotDirectory).exists()) {
       Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
       val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
@@ -115,24 +117,26 @@ object ScreenCaptor {
       .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
       .build()
 
-    return screenshotManager.makeScreenshot()
-      .observe({ screenshot ->
-        val fileSaver = ScreenshotFileSaver.create(
-          compressFormat = Bitmap.CompressFormat.PNG,
-          compressQuality = screenshotQuality.value
-        )
-        fileSaver.saveToFile(screenshotFile, screenshot)
-
-        getRootViewsFromActivity(activity).forEach { rootView ->
-          Log.d(SCREENSHOT, "Resetting view tree for '$screenshotName'")
-          resetViewTreeAfterScreenshot(
-            viewDataProcessor,
-            rootView,
-            initialStateOfViews,
-            viewIdsToExclude
+    mainHandler.post {
+      screenshotManager.makeScreenshot()
+        .observe({ screenshot ->
+          val fileSaver = ScreenshotFileSaver.create(
+            compressFormat = Bitmap.CompressFormat.PNG,
+            compressQuality = screenshotQuality.value
           )
-        }
-      }, { throwable -> throw throwable })
+          fileSaver.saveToFile(screenshotFile, screenshot)
+
+          getRootViewsFromActivity(activity).forEach { rootView ->
+            Log.d(SCREENSHOT, "Resetting view tree for '$screenshotName'")
+            resetViewTreeAfterScreenshot(
+              viewDataProcessor,
+              rootView,
+              initialStateOfViews,
+              viewIdsToExclude
+            )
+          }
+        }, { throwable -> throw throwable })
+    }
   }
 
   private fun modifyViewBeforeScreenshot(
