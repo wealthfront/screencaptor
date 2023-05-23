@@ -1,4 +1,5 @@
 
+import Versions.appCompatVersion
 import Versions.junitVersion
 import Versions.recyclerViewVersion
 import Versions.robolectricVersion
@@ -13,6 +14,7 @@ object Plugins {
 
 object Dependencies {
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    const val appCompat = "androidx.appcompat:appcompat:$appCompatVersion"
     const val screenshotty = "eu.bolt:screenshotty:$screenshottyVersion"
 
     const val robolectric = "org.robolectric:robolectric:$robolectricVersion"

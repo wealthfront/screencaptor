@@ -4,8 +4,9 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 
-class SampleActivity : Activity() {
+class SampleActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

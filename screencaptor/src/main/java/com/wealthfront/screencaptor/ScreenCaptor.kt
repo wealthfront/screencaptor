@@ -9,6 +9,17 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
@@ -20,9 +31,13 @@ import com.wealthfront.screencaptor.views.mutator.CursorHider
 import com.wealthfront.screencaptor.views.mutator.ScrollbarHider
 import com.wealthfront.screencaptor.views.mutator.ViewMutator
 import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
+import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
+import org.hamcrest.Matchers.any
 import java.io.File
 import java.util.Locale.ENGLISH
 
@@ -36,6 +51,44 @@ object ScreenCaptor {
   private val mainHandler = Handler(Looper.getMainLooper())
   private val SCREENSHOT = javaClass.simpleName
   private const val defaultScreenshotDirectory = "screenshots"
+
+  private fun captureScreenshot(
+    activityScenario: ActivityScenario<out AppCompatActivity>,
+    screenshotName: String,
+    screenshotNameSuffix: String = "",
+    screenshotDirectory: String = defaultScreenshotDirectory,
+    screenshotFormat: ScreenshotFormat = PNG,
+    screenshotQuality: ScreenshotQuality = BEST,
+    onSuccess: (Screenshot) -> Unit
+  ) {
+    if (!File(screenshotDirectory).exists()) {
+      Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
+      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
+      assert(screenshotDirsCreated)
+    }
+
+    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
+    val screenshotId =
+      "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
+    val screenshotFile = File("$screenshotDirectory/$screenshotId.${screenshotFormat.extension}")
+
+    activityScenario.onActivity { activity ->
+      val screenshotManager = ScreenshotManagerBuilder(activity)
+        .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
+        .build()
+
+      screenshotManager.makeScreenshot()
+        .observe({ screenshot ->
+          val fileSaver = ScreenshotFileSaver.create(
+            compressFormat = Bitmap.CompressFormat.PNG,
+            compressQuality = screenshotQuality.value
+          )
+          fileSaver.saveToFile(screenshotFile, screenshot)
+
+          onSuccess.invoke(screenshot)
+        }, { throwable -> throw throwable })
+    }
+  }
 
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
@@ -74,7 +127,7 @@ object ScreenCaptor {
    */
   @Synchronized
   fun takeScreenshot(
-    activity: Activity,
+    activityScenario: ActivityScenario<out AppCompatActivity>,
     screenshotName: String,
     screenshotNameSuffix: String = "",
     viewIdsToExclude: Set<Int> = setOf(),
@@ -85,58 +138,59 @@ object ScreenCaptor {
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
-    if (!File(screenshotDirectory).exists()) {
-      Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
-      assert(screenshotDirsCreated)
+
+    val mutator = VisibilityMutator()
+    runViewMutationInteraction(viewIdsToExclude, mutator, View.INVISIBLE).perform()
+    val idlingResource = ScreenshotIdlingResource()
+
+    IdlingRegistry.getInstance().register(idlingResource)
+    captureScreenshot(
+      activityScenario,
+      screenshotName,
+      screenshotNameSuffix,
+      screenshotDirectory,
+      screenshotFormat,
+      screenshotQuality
+    ) { screenshot ->
+      idlingResource.setScreenshotCaptured()
+      IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
-    val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
-    val screenshotId =
-      "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFile = File("$screenshotDirectory/$screenshotId.${screenshotFormat.extension}")
+    runViewRestorationInteraction(viewIdsToExclude, mutator)
+  }
 
-    val initialStateOfViews = hashMapOf<View, ViewTreeState>()
-    getRootViewsFromActivity(activity).forEach { rootView ->
-      Log.d(SCREENSHOT, "Modifying view tree for '$screenshotName'")
-      if (rootView.width == 0 || rootView.height == 0) {
-        throw IllegalStateException("This view ($rootView) has no height or width. Is ${rootView.id} the currently displayed activity?")
+  private fun <S, T> runViewMutationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>, desiredValue: T): ViewInteraction {
+    val viewAction = object : ViewAction {
+      override fun getDescription(): String = "Wrapper for ViewMutator2"
+
+      override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
+
+      override fun perform(uiController: UiController, view: View) {
+        mutator.mutate(view, desiredValue)
       }
-
-      val viewState = modifyViewBeforeScreenshot(
-        rootView,
-        viewDataProcessor,
-        viewMutators,
-        viewModifiers,
-        viewIdsToExclude
-      )
-      initialStateOfViews[rootView] = viewState
     }
-
-    val screenshotManager = ScreenshotManagerBuilder(activity)
-      .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
-      .build()
-
-    mainHandler.post {
-      screenshotManager.makeScreenshot()
-        .observe({ screenshot ->
-          val fileSaver = ScreenshotFileSaver.create(
-            compressFormat = Bitmap.CompressFormat.PNG,
-            compressQuality = screenshotQuality.value
-          )
-          fileSaver.saveToFile(screenshotFile, screenshot)
-
-          getRootViewsFromActivity(activity).forEach { rootView ->
-            Log.d(SCREENSHOT, "Resetting view tree for '$screenshotName'")
-            resetViewTreeAfterScreenshot(
-              viewDataProcessor,
-              rootView,
-              initialStateOfViews,
-              viewIdsToExclude
-            )
-          }
-        }, { throwable -> throw throwable })
+    val viewMatchers = viewIds.map {
+      withId(it)
     }
+    return Espresso.onView(Matchers.anyOf(viewMatchers)).perform(viewAction)
+  }
+
+  private fun <S, T> runViewRestorationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>): ViewInteraction {
+    val viewAction = object : ViewAction {
+      override fun getDescription(): String = "Wrapper for ViewMutator2"
+
+      override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
+
+      override fun perform(uiController: UiController, view: View) {
+        mutator.restore(view)
+      }
+    }
+    val viewMatchers = viewIds.map {
+      withId(it)
+    }
+    return Espresso.onView(Matchers.anyOf(viewMatchers))
+      //.inRoot(RootMatchers.)
+      .perform(viewAction)
   }
 
   private fun modifyViewBeforeScreenshot(

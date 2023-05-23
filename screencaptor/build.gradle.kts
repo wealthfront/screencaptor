@@ -45,6 +45,8 @@ android {
 dependencies {
     implementation(Dependencies.recyclerView)
     implementation(Dependencies.screenshotty)
+    implementation(Dependencies.espressoCore)
+    implementation("androidx.appcompat:appcompat:1.5.1")
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)
