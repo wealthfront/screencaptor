@@ -3,6 +3,7 @@ package com.wealthfront.screencaptor
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.os.Environment
+import android.view.View
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -11,7 +12,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
-import com.wealthfront.screencaptor.views.modifier.TextViewDataModifier
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -33,7 +33,7 @@ class ScreenshotTest {
 
   @After
   fun cleanUpScreenshots() {
-    // File(screenShotDirectory).deleteRecursively()
+    File(screenShotDirectory).deleteRecursively()
   }
 
   @Test
@@ -58,7 +58,9 @@ class ScreenshotTest {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_change_text",
-      viewModifiers = setOf(TextViewDataModifier(R.id.textView, "Some shorter sample data")),
+      viewMutations = setOf(
+        ViewMutation(withId(R.id.textView), ContentMutator("Shorter text"))
+      ),
       screenshotDirectory = screenShotDirectory
     )
 
@@ -76,7 +78,9 @@ class ScreenshotTest {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_no_logo",
-      viewIdsToExclude = setOf(R.id.wealthfrontIcon),
+      viewMutations = setOf(
+        ViewMutation(withId(R.id.wealthfrontIcon), VisibilityMutator(View.INVISIBLE))
+      ),
       screenshotDirectory = screenShotDirectory
     )
 

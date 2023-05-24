@@ -2,7 +2,7 @@ package com.wealthfront.screencaptor
 
 import android.view.View
 
-class VisibilityMutator : ViewMutator2<View, Int>() {
+class VisibilityMutator(visibility: Int) : ViewMutator2<View, Int>(View::class.java, visibility) {
   override fun key(): Int = R.id.visibility_mutator
 
   override fun originalViewState(view: View): Int = view.visibility

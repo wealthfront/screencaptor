@@ -1,9 +1,8 @@
 package com.wealthfront.screencaptor
 
-import android.view.View
 import android.widget.TextView
 
-class ContentMutator: ViewMutator2<TextView, CharSequence>() {
+class ContentMutator(content: CharSequence): ViewMutator2<TextView, CharSequence>(TextView::class.java, content) {
   override fun key(): Int = R.id.content_mutator
 
   override fun originalViewState(view: TextView): CharSequence = view.text

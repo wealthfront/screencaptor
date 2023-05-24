@@ -7,32 +7,24 @@ import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
 import com.wealthfront.screencaptor.views.modifier.DataModifier
-import com.wealthfront.screencaptor.views.modifier.DefaultViewDataProcessor
 import com.wealthfront.screencaptor.views.modifier.ViewDataProcessor
 import com.wealthfront.screencaptor.views.modifier.ViewVisibilityModifier
-import com.wealthfront.screencaptor.views.mutator.CursorHider
-import com.wealthfront.screencaptor.views.mutator.ScrollbarHider
 import com.wealthfront.screencaptor.views.mutator.ViewMutator
 import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.anyOf
 import java.io.File
 import java.util.Locale.ENGLISH
@@ -85,12 +77,9 @@ object ScreenCaptor {
     }
   }
 
-  fun buildViewAction(
-    viewMatcher: Matcher<View>,
-    viewModifiers: ViewMutator2<*, *>,
-  ): ViewAction {
-    val mutationViewAction = getMutatorAction(mutator, desiredValue)
-  }
+  // next thing to tackle is roots.
+  // Do dialogs and Activity views both work?
+  // .inRoot(RootMatchers.isDialog())
 
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
@@ -137,16 +126,9 @@ object ScreenCaptor {
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
-    // val visibilityMutator = VisibilityMutator()
-    val contentMutator = ContentMutator()
     viewMutations.forEach { viewMutation ->
-      val viewAction = getMutatorAction(viewMutation.viewMutator2, desiredValue)
+      val viewAction = viewMutation.viewMutator.getMutatorAction()
       onView(viewMutation.viewMatcher).perform(viewAction)
-    }
-    if (mutationViewActions.isNotEmpty()) {
-      // runViewMutationInteraction(viewIdsToExclude, visibilityMutator, View.INVISIBLE).perform()
-      // do we need to merge ViewMutator2 and ViewInteraction or ViewAction
-      runViewMutationInteraction(viewIdsToExclude, contentMutator, "Good Burger").perform()
     }
     val idlingResource = ScreenshotIdlingResource()
 
@@ -163,50 +145,10 @@ object ScreenCaptor {
       IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
-    if (viewIdsToExclude.isNotEmpty()) {
-      runViewRestorationInteraction(viewIdsToExclude, contentMutator)
+    viewMutations.forEach { viewMutation ->
+      val viewAction = viewMutation.viewMutator.getRestorationAction()
+      onView(viewMutation.viewMatcher).perform(viewAction)
     }
-  }
-
-  private inline fun <reified S : View, T> runViewMutationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>, desiredValue: T): ViewInteraction {
-    val viewAction = getMutatorAction(mutator, desiredValue)
-    // val viewAction = object : ViewAction {
-    //   override fun getDescription(): String = "Wrapper for ViewMutator2"
-    //
-    //   override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
-    //
-    //   override fun perform(uiController: UiController, view: View) {
-    //     mutator.mutate(view, desiredValue)
-    //     uiController.loopMainThreadUntilIdle()
-    //   }
-    // }
-    val viewMatchers = viewIds.map {
-      withId(it)
-    }
-    return onView(anyOf(viewMatchers))
-      .perform(viewAction)
-  }
-
-  private inline fun <reified S: View, T> runViewRestorationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>): ViewInteraction {
-    val viewAction = getRestorationAction(mutator)
-    // val viewAction = object : ViewAction {
-    //   override fun getDescription(): String = "Wrapper for ViewMutator2"
-    //
-    //   override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
-    //
-    //   override fun perform(uiController: UiController, view: View) {
-    //     mutator.restore(view)
-    //     uiController.loopMainThreadUntilIdle()
-    //   }
-    // }
-    val viewMatchers = viewIds.map {
-      withId(it)
-    }
-    return onView(anyOf(viewMatchers))
-      // next thing to tackle is roots.
-      // Do dialogs and Activity views both work?
-      // .inRoot(RootMatchers.isDialog())
-      .perform(viewAction)
   }
 
   private fun modifyViewBeforeScreenshot(
