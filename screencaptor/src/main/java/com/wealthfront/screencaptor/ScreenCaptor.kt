@@ -5,20 +5,16 @@ import android.graphics.Bitmap
 import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
-import androidx.annotation.IdRes
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
@@ -37,7 +33,7 @@ import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
-import org.hamcrest.Matchers.any
+import org.hamcrest.Matchers.anyOf
 import java.io.File
 import java.util.Locale.ENGLISH
 
@@ -48,7 +44,6 @@ object ScreenCaptor {
 
   data class ViewTreeState(val viewVisibilityStates: Map<Int, Int>, val viewDataStates: Set<DataModifier>)
 
-  private val mainHandler = Handler(Looper.getMainLooper())
   private val SCREENSHOT = javaClass.simpleName
   private const val defaultScreenshotDirectory = "screenshots"
 
@@ -138,9 +133,12 @@ object ScreenCaptor {
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
-
-    val mutator = VisibilityMutator()
-    runViewMutationInteraction(viewIdsToExclude, mutator, View.INVISIBLE).perform()
+    // val visibilityMutator = VisibilityMutator()
+    val contentMutator = ContentMutator()
+    if (viewIdsToExclude.isNotEmpty()) {
+      // runViewMutationInteraction(viewIdsToExclude, visibilityMutator, View.INVISIBLE).perform()
+      runViewMutationInteraction(viewIdsToExclude, contentMutator, "Good Burger").perform()
+    }
     val idlingResource = ScreenshotIdlingResource()
 
     IdlingRegistry.getInstance().register(idlingResource)
@@ -156,10 +154,12 @@ object ScreenCaptor {
       IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
-    runViewRestorationInteraction(viewIdsToExclude, mutator)
+    if (viewIdsToExclude.isNotEmpty()) {
+      runViewRestorationInteraction(viewIdsToExclude, contentMutator)
+    }
   }
 
-  private fun <S, T> runViewMutationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>, desiredValue: T): ViewInteraction {
+  private fun <S : View, T> runViewMutationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>, desiredValue: T): ViewInteraction {
     val viewAction = object : ViewAction {
       override fun getDescription(): String = "Wrapper for ViewMutator2"
 
@@ -167,12 +167,14 @@ object ScreenCaptor {
 
       override fun perform(uiController: UiController, view: View) {
         mutator.mutate(view, desiredValue)
+        uiController.loopMainThreadUntilIdle()
       }
     }
     val viewMatchers = viewIds.map {
       withId(it)
     }
-    return Espresso.onView(Matchers.anyOf(viewMatchers)).perform(viewAction)
+    return onView(anyOf(viewMatchers))
+      .perform(viewAction)
   }
 
   private fun <S, T> runViewRestorationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>): ViewInteraction {
@@ -183,13 +185,16 @@ object ScreenCaptor {
 
       override fun perform(uiController: UiController, view: View) {
         mutator.restore(view)
+        uiController.loopMainThreadUntilIdle()
       }
     }
     val viewMatchers = viewIds.map {
       withId(it)
     }
-    return Espresso.onView(Matchers.anyOf(viewMatchers))
-      //.inRoot(RootMatchers.)
+    return onView(anyOf(viewMatchers))
+      // next thing to tackle is roots.
+      // Do dialogs and Activity views both work?
+      // .inRoot(RootMatchers.isDialog())
       .perform(viewAction)
   }
 
