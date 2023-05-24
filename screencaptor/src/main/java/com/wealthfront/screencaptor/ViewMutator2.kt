@@ -4,10 +4,14 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
+import androidx.test.espresso.ViewInteraction
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 
-data class ViewMutation<S : View, T>(val viewMatcher: Matcher<View>, val viewMutator: ViewMutator2<S, T>)
+data class ViewMutation<S : View, T>(
+  val viewInteraction: ViewInteraction,
+  val viewMutator: ViewMutator2<S, T>
+)
 
 abstract class ViewMutator2<S : View, T>(private val viewClass: Class<S>, private val desiredValue: T) {
   @IdRes

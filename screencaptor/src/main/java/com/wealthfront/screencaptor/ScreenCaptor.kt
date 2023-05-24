@@ -77,10 +77,6 @@ object ScreenCaptor {
     }
   }
 
-  // next thing to tackle is roots.
-  // Do dialogs and Activity views both work?
-  // .inRoot(RootMatchers.isDialog())
-
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
    * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
@@ -116,6 +112,12 @@ object ScreenCaptor {
    * @param screenshotQuality specifies the level of compression of the screenshot.
    *
    */
+  // next thing to tackle is roots.
+  // Do dialogs and Activity views both work?
+  // .inRoot(RootMatchers.isDialog())
+
+  // will the tagging approach actually work for recycler views?
+  // I guess if we don't scroll in between screenshots...
   @Synchronized
   fun takeScreenshot(
     activityScenario: ActivityScenario<out AppCompatActivity>,
@@ -128,7 +130,7 @@ object ScreenCaptor {
   ) {
     viewMutations.forEach { viewMutation ->
       val viewAction = viewMutation.viewMutator.getMutatorAction()
-      onView(viewMutation.viewMatcher).perform(viewAction)
+      viewMutation.viewInteraction.perform(viewAction)
     }
     val idlingResource = ScreenshotIdlingResource()
 
@@ -147,7 +149,8 @@ object ScreenCaptor {
 
     viewMutations.forEach { viewMutation ->
       val viewAction = viewMutation.viewMutator.getRestorationAction()
-      onView(viewMutation.viewMatcher).perform(viewAction)
+      // this restoration interaction sometimes fails, since we've modified it!!!
+      viewMutation.viewInteraction.perform(viewAction)
     }
   }
 

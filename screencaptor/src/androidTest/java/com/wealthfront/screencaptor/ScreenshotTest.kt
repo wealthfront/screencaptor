@@ -7,7 +7,10 @@ import android.view.View
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -33,7 +36,7 @@ class ScreenshotTest {
 
   @After
   fun cleanUpScreenshots() {
-    File(screenShotDirectory).deleteRecursively()
+    // File(screenShotDirectory).deleteRecursively()
   }
 
   @Test
@@ -43,6 +46,12 @@ class ScreenshotTest {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_dialog",
+      viewMutations = setOf(
+        ViewMutation(
+          onView(withText("I am a Dialog")).inRoot(RootMatchers.isDialog()),
+          ContentMutator("dialogic")
+        )
+      ),
       screenshotDirectory = screenShotDirectory
     )
 
@@ -54,12 +63,37 @@ class ScreenshotTest {
   }
 
   @Test
+  fun takeScreenshot_recyclerView() {
+
+    ScreenCaptor.takeScreenshot(
+      activityScenario = activityTestRule.scenario,
+      screenshotName = "screenshot_dialog",
+      viewMutations = setOf(
+        ViewMutation(
+          RecyclerViewActions.actionOnItem<>()
+          onView(withText("I am a Dialog")).inRoot(RootMatchers.isDialog()),
+          ContentMutator("dialogic")
+        )
+      ),
+      screenshotDirectory = screenShotDirectory
+    )
+
+    Espresso.onIdle {
+      assertTrue(File(screenShotDirectory).exists())
+      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
+      assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_dialog") }!!.exists())
+    }
+  }
+  @Test
   fun takeScreenshot_modify() {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_change_text",
       viewMutations = setOf(
-        ViewMutation(withId(R.id.textView), ContentMutator("Shorter text"))
+        ViewMutation(
+          onView(withId(R.id.textView)),
+          ContentMutator("Shorter text")
+        )
       ),
       screenshotDirectory = screenShotDirectory
     )
@@ -79,7 +113,10 @@ class ScreenshotTest {
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_no_logo",
       viewMutations = setOf(
-        ViewMutation(withId(R.id.wealthfrontIcon), VisibilityMutator(View.INVISIBLE))
+        ViewMutation(
+          onView(withId(R.id.wealthfrontIcon)),
+          VisibilityMutator(View.INVISIBLE)
+        )
       ),
       screenshotDirectory = screenShotDirectory
     )

@@ -49,12 +49,6 @@
           android:text="Some sample data which is really long, so long that it wraps to another line and maybe even three lines"
           />
 
-      <ScrollView
-          android:id="@+id/anotherScrollView"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          />
-
       <Button
           android:id="@+id/showDialog"
           android:layout_width="wrap_content"
@@ -62,6 +56,13 @@
           android:text="Show dialog"
           />
 
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/messageList"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1"
+          android:orientation="vertical"
+          />
     </LinearLayout>
 
   </androidx.core.widget.NestedScrollView>

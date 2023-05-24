@@ -54,6 +54,7 @@ dependencies {
     testImplementation(Dependencies.junit)
     testImplementation(Dependencies.truth)
     testImplementation(Dependencies.espressoCore)
+    testImplementation(Dependencies.espressoContrib)
     testImplementation(Dependencies.testRules)
     testImplementation(Dependencies.testExtJunit)
 
@@ -61,4 +62,5 @@ dependencies {
     androidTestImplementation(Dependencies.testExtJunit)
     androidTestImplementation(Dependencies.testRules)
     androidTestImplementation(Dependencies.espressoCore)
+    androidTestImplementation(Dependencies.espressoContrib)
 }
