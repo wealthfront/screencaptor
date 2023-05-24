@@ -85,6 +85,13 @@ object ScreenCaptor {
     }
   }
 
+  fun buildViewAction(
+    viewMatcher: Matcher<View>,
+    viewModifiers: ViewMutator2<*, *>,
+  ): ViewAction {
+    val mutationViewAction = getMutatorAction(mutator, desiredValue)
+  }
+
   /**
    * Takes a screenshot whenever the method is called from the test thread or the main thread.
    * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
@@ -125,18 +132,20 @@ object ScreenCaptor {
     activityScenario: ActivityScenario<out AppCompatActivity>,
     screenshotName: String,
     screenshotNameSuffix: String = "",
-    viewIdsToExclude: Set<Int> = setOf(),
-    viewModifiers: Set<DataModifier> = setOf(),
-    viewDataProcessor: ViewDataProcessor = DefaultViewDataProcessor(),
-    viewMutators: Set<ViewMutator> = setOf(ScrollbarHider, CursorHider),
+    viewMutations: Set<ViewMutation<*,*>> = setOf(),
     screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
     // val visibilityMutator = VisibilityMutator()
     val contentMutator = ContentMutator()
-    if (viewIdsToExclude.isNotEmpty()) {
+    viewMutations.forEach { viewMutation ->
+      val viewAction = getMutatorAction(viewMutation.viewMutator2, desiredValue)
+      onView(viewMutation.viewMatcher).perform(viewAction)
+    }
+    if (mutationViewActions.isNotEmpty()) {
       // runViewMutationInteraction(viewIdsToExclude, visibilityMutator, View.INVISIBLE).perform()
+      // do we need to merge ViewMutator2 and ViewInteraction or ViewAction
       runViewMutationInteraction(viewIdsToExclude, contentMutator, "Good Burger").perform()
     }
     val idlingResource = ScreenshotIdlingResource()
@@ -159,17 +168,18 @@ object ScreenCaptor {
     }
   }
 
-  private fun <S : View, T> runViewMutationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>, desiredValue: T): ViewInteraction {
-    val viewAction = object : ViewAction {
-      override fun getDescription(): String = "Wrapper for ViewMutator2"
-
-      override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
-
-      override fun perform(uiController: UiController, view: View) {
-        mutator.mutate(view, desiredValue)
-        uiController.loopMainThreadUntilIdle()
-      }
-    }
+  private inline fun <reified S : View, T> runViewMutationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>, desiredValue: T): ViewInteraction {
+    val viewAction = getMutatorAction(mutator, desiredValue)
+    // val viewAction = object : ViewAction {
+    //   override fun getDescription(): String = "Wrapper for ViewMutator2"
+    //
+    //   override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
+    //
+    //   override fun perform(uiController: UiController, view: View) {
+    //     mutator.mutate(view, desiredValue)
+    //     uiController.loopMainThreadUntilIdle()
+    //   }
+    // }
     val viewMatchers = viewIds.map {
       withId(it)
     }
@@ -177,17 +187,18 @@ object ScreenCaptor {
       .perform(viewAction)
   }
 
-  private fun <S, T> runViewRestorationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>): ViewInteraction {
-    val viewAction = object : ViewAction {
-      override fun getDescription(): String = "Wrapper for ViewMutator2"
-
-      override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
-
-      override fun perform(uiController: UiController, view: View) {
-        mutator.restore(view)
-        uiController.loopMainThreadUntilIdle()
-      }
-    }
+  private inline fun <reified S: View, T> runViewRestorationInteraction(viewIds: Set<Int>, mutator: ViewMutator2<S, T>): ViewInteraction {
+    val viewAction = getRestorationAction(mutator)
+    // val viewAction = object : ViewAction {
+    //   override fun getDescription(): String = "Wrapper for ViewMutator2"
+    //
+    //   override fun getConstraints(): Matcher<View> = Matchers.instanceOf(View::class.java)
+    //
+    //   override fun perform(uiController: UiController, view: View) {
+    //     mutator.restore(view)
+    //     uiController.loopMainThreadUntilIdle()
+    //   }
+    // }
     val viewMatchers = viewIds.map {
       withId(it)
     }

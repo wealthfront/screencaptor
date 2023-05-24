@@ -2,6 +2,9 @@ package com.wealthfront.screencaptor
 
 import android.view.View
 import androidx.annotation.IdRes
+import org.hamcrest.Matcher
+
+data class ViewMutation<S : View, T>(val viewMatcher: Matcher<S>, val viewMutator2: ViewMutator2<S, T>, val desiredValue:)
 
 abstract class ViewMutator2<S : View, T> {
   @IdRes
