@@ -6,18 +6,13 @@ import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingRegistry
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
-import com.wealthfront.screencaptor.views.modifier.DataModifier
-import com.wealthfront.screencaptor.views.modifier.ViewDataProcessor
-import com.wealthfront.screencaptor.views.modifier.ViewVisibilityModifier
-import com.wealthfront.screencaptor.views.mutator.ViewMutator
-import com.wealthfront.screencaptor.views.mutator.ViewTreeMutator
+import com.wealthfront.screencaptor.idlingresource.ScreenshotIdlingResource
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
@@ -30,20 +25,15 @@ import java.util.Locale.ENGLISH
  */
 object ScreenCaptor {
 
-  data class ViewTreeState(val viewVisibilityStates: Map<Int, Int>, val viewDataStates: Set<DataModifier>)
-
   private val SCREENSHOT = javaClass.simpleName
   private const val defaultScreenshotDirectory = "screenshots"
 
-  private fun captureScreenshot(
-    activityScenario: ActivityScenario<out AppCompatActivity>,
+  private fun getScreenshotFile(
+    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotName: String,
     screenshotNameSuffix: String = "",
-    screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
-    screenshotQuality: ScreenshotQuality = BEST,
-    onSuccess: (Screenshot) -> Unit
-  ) {
+  ): File {
     if (!File(screenshotDirectory).exists()) {
       Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
       val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
@@ -53,24 +43,29 @@ object ScreenCaptor {
     val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
     val screenshotId =
       "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
-    val screenshotFile = File("$screenshotDirectory/$screenshotId.${screenshotFormat.extension}")
+    return File("$screenshotDirectory/$screenshotId.${screenshotFormat.extension}")
+  }
 
-    activityScenario.onActivity { activity ->
-      val screenshotManager = ScreenshotManagerBuilder(activity)
-        .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
-        .build()
+  private fun captureScreenshot(
+    activity: Activity,
+    screenshotFile: File,
+    screenshotQuality: ScreenshotQuality = BEST,
+    onSuccess: (Screenshot) -> Unit
+  ) {
+    val screenshotManager = ScreenshotManagerBuilder(activity)
+      .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
+      .build()
 
-      screenshotManager.makeScreenshot()
-        .observe({ screenshot ->
-          val fileSaver = ScreenshotFileSaver.create(
-            compressFormat = Bitmap.CompressFormat.PNG,
-            compressQuality = screenshotQuality.value
-          )
-          fileSaver.saveToFile(screenshotFile, screenshot)
+    screenshotManager.makeScreenshot()
+      .observe({ screenshot ->
+        val fileSaver = ScreenshotFileSaver.create(
+          compressFormat = Bitmap.CompressFormat.PNG,
+          compressQuality = screenshotQuality.value
+        )
+        fileSaver.saveToFile(screenshotFile, screenshot)
 
-          onSuccess.invoke(screenshot)
-        }, { throwable -> throw throwable })
-    }
+        onSuccess.invoke(screenshot)
+      }, { throwable -> throw throwable })
   }
 
   /**
@@ -79,7 +74,7 @@ object ScreenCaptor {
    * In this method, we post the operation to the main thread since we mutate the views and change
    * the visibility of certain views before and after taking the screenshot.
    *
-   * @param activity to be captured as the screenshot and saved on the path provided.
+   * @param activityScenario to be captured as the screenshot and saved on the path provided.
    *
    * @param screenshotName is the name of the file that the screenshot will be saved under.
    * Usually, it's a pretty good idea to have this be pretty descriptive. By default, the name of
@@ -87,16 +82,7 @@ object ScreenCaptor {
    *
    * @param screenshotNameSuffix is an optional param to add a suffix to the name of the screenshot file.
    *
-   * @param viewIdsToExclude takes in set of ids to exclude from the screenshot by changing the
-   * visibility to be invisible when the screenshot is taken and then turning it back to the
-   * visibility that the view initially had.
-   *
-   * @param viewModifiers takes in a set of data modifiers which will be processed by the [viewDataProcessor].
-   *
-   * @param viewDataProcessor allows you to pass in a custom view modification processor.
-   *
-   * @param viewMutators allows you to mutate the subclasses of views in any particular way
-   * (Hides scrollbars and cursors by default).
+   * @param viewMutations allow you to mutate the view before capturing a screenshot
    *
    * @param screenshotDirectory allows you to specify where the screenshot taken should be saved in
    * the device. Note: On devices above API 29, saving directly to an external storage in not allowed.
@@ -123,15 +109,76 @@ object ScreenCaptor {
         getPerformInteraction().perform(getPerformAction())
       }
     }
-    val idlingResource = ScreenshotIdlingResource()
 
+    val idlingResource = ScreenshotIdlingResource()
     IdlingRegistry.getInstance().register(idlingResource)
+    val screenshotFile = getScreenshotFile(screenshotName, screenshotNameSuffix, screenshotDirectory, screenshotFormat)
+    activityScenario.onActivity { activity ->
+      captureScreenshot(
+        activity,
+        screenshotFile,
+        screenshotQuality
+      ) { screenshot ->
+        idlingResource.setScreenshotCaptured()
+        IdlingRegistry.getInstance().unregister(idlingResource)
+      }
+    }
+
+    viewMutations.forEach { viewMutation ->
+      with(viewMutation) {
+        getRestoreInteraction().perform(getRestoreAction())
+      }
+    }
+  }
+
+  /**
+   * Takes a screenshot whenever the method is called from the test thread or the main thread.
+   * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
+   * In this method, we post the operation to the main thread since we mutate the views and change
+   * the visibility of certain views before and after taking the screenshot.
+   *
+   * @param activity to be captured as the screenshot and saved on the path provided.
+   *
+   * @param screenshotName is the name of the file that the screenshot will be saved under.
+   * Usually, it's a pretty good idea to have this be pretty descriptive. By default, the name of
+   * the screenshot will have the device and sdk information attached to it.
+   *
+   * @param screenshotNameSuffix is an optional param to add a suffix to the name of the screenshot file.
+   *
+   * @param viewMutations allow you to mutate the view before capturing a screenshot
+   *
+   * @param screenshotDirectory allows you to specify where the screenshot taken should be saved in
+   * the device. Note: On devices above API 29, saving directly to an external storage in not allowed.
+   * So remember to pass in a valid path retrieved from the context as follows
+   * {@code context.filesDir or context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)}.
+   *
+   * @param screenshotFormat specifies the format of the screenshot file.
+   *
+   * @param screenshotQuality specifies the level of compression of the screenshot.
+   *
+   */
+  @Synchronized
+  fun takeScreenshot(
+    activity: Activity,
+    screenshotName: String,
+    screenshotNameSuffix: String = "",
+    viewMutations: Set<ViewMutation> = setOf(),
+    screenshotDirectory: String = defaultScreenshotDirectory,
+    screenshotFormat: ScreenshotFormat = PNG,
+    screenshotQuality: ScreenshotQuality = BEST
+  ) {
+    viewMutations.forEach { viewMutation ->
+      with(viewMutation) {
+        getPerformInteraction().perform(getPerformAction())
+      }
+    }
+
+    val idlingResource = ScreenshotIdlingResource()
+    IdlingRegistry.getInstance().register(idlingResource)
+    val screenshotFile = getScreenshotFile(screenshotDirectory, screenshotName, screenshotNameSuffix, screenshotFormat)
     captureScreenshot(
-      activityScenario,
-      screenshotName,
-      screenshotNameSuffix,
-      screenshotDirectory,
-      screenshotFormat,
+      activity,
+      screenshotFile,
       screenshotQuality
     ) { screenshot ->
       idlingResource.setScreenshotCaptured()
@@ -143,49 +190,6 @@ object ScreenCaptor {
         getRestoreInteraction().perform(getRestoreAction())
       }
     }
-  }
-
-  private fun modifyViewBeforeScreenshot(
-    view: View,
-    viewDataProcessor: ViewDataProcessor,
-    viewMutators: Set<ViewMutator>,
-    viewModifiers: Set<DataModifier>,
-    viewIdsToExclude: Set<Int>
-  ): ViewTreeState {
-    Log.d(SCREENSHOT, "Mutating views as needed inside $view")
-    ViewTreeMutator.Builder()
-      .viewMutators(viewMutators)
-      .mutateView(view)
-      .mutate()
-
-    Log.d(SCREENSHOT, "Disabling views: $viewIdsToExclude")
-    val initialVisibilityOfViews = ViewVisibilityModifier.hideViews(view, viewIdsToExclude)
-    val initialDataOfViews = viewDataProcessor.modifyViews(view, viewModifiers)
-    return ViewTreeState(initialVisibilityOfViews, initialDataOfViews)
-  }
-
-  private fun resetViewTreeAfterScreenshot(
-    viewDataProcessor: ViewDataProcessor,
-    view: View,
-    initialViewStates: Map<View, ViewTreeState>,
-    viewIdsToExclude: Set<Int>
-  ) {
-    Log.d(SCREENSHOT, "Enabling views: $viewIdsToExclude")
-    val initialViewState = initialViewStates[view]!!
-    ViewVisibilityModifier.showViews(view, viewIdsToExclude, initialViewState.viewVisibilityStates)
-    viewDataProcessor.resetViews(view, initialViewState.viewDataStates)
-  }
-
-  private fun getRootViewsFromActivity(activity: Activity): List<View> {
-    val windowMgr = activity.windowManager!!
-    val globalWindowManagerField = windowMgr.javaClass.getDeclaredField("mGlobal")
-      .apply { isAccessible = true }
-    val globalWindowManager = globalWindowManagerField.get(windowMgr)
-
-    val viewsField = globalWindowManager.javaClass.getDeclaredField("mViews")
-      .apply { isAccessible = true }
-    @Suppress("UNCHECKED_CAST")
-    return viewsField.get(globalWindowManager) as List<View>
   }
 }
 

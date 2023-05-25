@@ -10,17 +10,21 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
-import org.hamcrest.Description
+import com.wealthfront.screencaptor.recyclerviewmutator.RecyclerViewMutationOnItem
+import com.wealthfront.screencaptor.recyclerviewmutator.RecyclerViewTextMutator
+import com.wealthfront.screencaptor.viewmutator.TextMutator
+import com.wealthfront.screencaptor.viewmutator.ViewMutationImpl
+import com.wealthfront.screencaptor.viewmutator.VisibilityMutator
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -55,12 +59,15 @@ class ScreenshotTest {
       viewMutations = setOf(
         ViewMutationImpl(
           withText("I am a Dialog"),
-          ContentMutator("dialogic"),
-          { it.inRoot(RootMatchers.isDialog()) }
-        )
+          TextMutator("dialogic")
+        ) { it.inRoot(isDialog()) }
       ),
       screenshotDirectory = screenShotDirectory
     )
+
+    onView(withText("I am a Dialog"))
+      .inRoot(isDialog())
+      .check(matches(isDisplayed()))
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
@@ -78,36 +85,26 @@ class ScreenshotTest {
         RecyclerViewMutationOnItem<RecyclerView.ViewHolder, TextView, CharSequence>(
           withId(R.id.messageList),
           withText("Corgi"),
-          ContentMutator("Good boy")
+          RecyclerViewTextMutator("Good boy")
+        ),
+        RecyclerViewMutationOnItem(
+          withId(R.id.messageList),
+          withText("Mastiff"),
+          RecyclerViewTextMutator("Bad dog")
         )
       ),
       screenshotDirectory = screenShotDirectory
     )
 
-    onView(withId(R.id.messageList)).check(matches(hasItemWithText("Corgi")))
+    onView(withId(R.id.messageList))
+      .check(matches(RecyclerViewMatchers.hasItemWithText("Corgi")))
+    onView(withId(R.id.messageList))
+      .check(matches(RecyclerViewMatchers.hasItemWithText("Mastiff")))
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
       assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
       assertTrue(File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_recyclerview") }!!.exists())
-    }
-  }
-
-  fun hasItemWithText(text: String) = object : BoundedMatcher<View, View>(View::class.java) {
-    override fun describeTo(description: Description) {
-      description.appendText("Searching for item with: $text")
-    }
-
-    override fun matchesSafely(item: View): Boolean {
-      if (item is RecyclerView) {
-        for (i in 0 until item.childCount) {
-          val childView = item.findViewHolderForAdapterPosition(i)!!.itemView
-          if (withText(text).matches(childView)) {
-            return true
-          }
-        }
-      }
-      return false
     }
   }
 
@@ -119,7 +116,7 @@ class ScreenshotTest {
       viewMutations = setOf(
         ViewMutationImpl(
           withId(R.id.textView),
-          ContentMutator("Shorter text")
+          TextMutator("Shorter text")
         )
       ),
       screenshotDirectory = screenShotDirectory
@@ -127,6 +124,7 @@ class ScreenshotTest {
 
     onView(withText("Some sample data which is really long, so long that it wraps to another line and maybe even three lines"))
       .check(matches(isDisplayed()))
+
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
       assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
@@ -151,7 +149,7 @@ class ScreenshotTest {
     )
 
     onView(withId(R.id.wealthfrontIcon))
-      .check(matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+      .check(matches(withEffectiveVisibility(VISIBLE)))
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())

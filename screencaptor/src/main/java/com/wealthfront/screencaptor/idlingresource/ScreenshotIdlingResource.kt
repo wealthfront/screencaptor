@@ -1,8 +1,8 @@
-package com.wealthfront.screencaptor
+package com.wealthfront.screencaptor.idlingresource
 
 import androidx.test.espresso.IdlingResource
 
-class ScreenshotIdlingResource: IdlingResource {
+internal class ScreenshotIdlingResource: IdlingResource {
   private var resourceCallback: IdlingResource.ResourceCallback? = null
   private var screenshotCaptured = false
 

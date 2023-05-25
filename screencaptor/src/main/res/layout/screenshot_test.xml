@@ -50,6 +50,18 @@
         android:text="Show dialog"
         />
 
+    <ScrollView
+        android:id="@+id/anotherScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <HorizontalScrollView
+        android:id="@+id/horizonalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageList"
         android:layout_width="match_parent"

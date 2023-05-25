@@ -21,13 +21,13 @@ class ViewExtensionsTest {
   @Test
   fun getAllChildren() {
     val children = sampleView.getAllChildren()
-    assertThat(children.count()).isEqualTo(8)
-    assertThat(children[0]).isInstanceOf(LinearLayout::class.java)
-    assertThat(children[1]).isInstanceOf(NestedScrollView::class.java)
-    assertThat(children[2]).isInstanceOf(LinearLayout::class.java)
-    assertThat(children[3]).isInstanceOf(ImageView::class.java)
-    assertThat(children[4]).isInstanceOf(EditText::class.java)
-    assertThat(children[5]).isInstanceOf(TextView::class.java)
+    assertThat(children.count()).isEqualTo(9)
+    assertThat(children[0]).isInstanceOf(NestedScrollView::class.java)
+    assertThat(children[1]).isInstanceOf(LinearLayout::class.java)
+    assertThat(children[2]).isInstanceOf(ImageView::class.java)
+    assertThat(children[3]).isInstanceOf(EditText::class.java)
+    assertThat(children[4]).isInstanceOf(TextView::class.java)
+    assertThat(children[5]).isInstanceOf(Button::class.java)
     assertThat(children[6]).isInstanceOf(ScrollView::class.java)
   }
 
