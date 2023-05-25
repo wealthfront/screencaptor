@@ -13,6 +13,7 @@ import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
 import com.wealthfront.screencaptor.idlingresource.ScreenshotIdlingResource
+import com.wealthfront.screencaptor.viewmutator.CursorMutator
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
@@ -27,6 +28,7 @@ object ScreenCaptor {
 
   private val SCREENSHOT = javaClass.simpleName
   private const val defaultScreenshotDirectory = "screenshots"
+  private val defaultMutators: Set<ViewMutation> = setOf(CursorMutator())
 
   private fun getScreenshotFile(
     screenshotDirectory: String = defaultScreenshotDirectory,
@@ -104,7 +106,7 @@ object ScreenCaptor {
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
-    viewMutations.forEach { viewMutation ->
+    viewMutations.plus(defaultMutators).forEach { viewMutation ->
       with(viewMutation) {
         getPerformInteraction().perform(getPerformAction())
       }
@@ -112,7 +114,12 @@ object ScreenCaptor {
 
     val idlingResource = ScreenshotIdlingResource()
     IdlingRegistry.getInstance().register(idlingResource)
-    val screenshotFile = getScreenshotFile(screenshotName, screenshotNameSuffix, screenshotDirectory, screenshotFormat)
+    val screenshotFile = getScreenshotFile(
+      screenshotDirectory = screenshotDirectory,
+      screenshotName = screenshotName,
+      screenshotNameSuffix = screenshotNameSuffix,
+      screenshotFormat = screenshotFormat
+    )
     activityScenario.onActivity { activity ->
       captureScreenshot(
         activity,
@@ -175,7 +182,12 @@ object ScreenCaptor {
 
     val idlingResource = ScreenshotIdlingResource()
     IdlingRegistry.getInstance().register(idlingResource)
-    val screenshotFile = getScreenshotFile(screenshotDirectory, screenshotName, screenshotNameSuffix, screenshotFormat)
+    val screenshotFile = getScreenshotFile(
+      screenshotDirectory = screenshotDirectory,
+      screenshotName = screenshotName,
+      screenshotNameSuffix = screenshotNameSuffix,
+      screenshotFormat = screenshotFormat
+    )
     captureScreenshot(
       activity,
       screenshotFile,

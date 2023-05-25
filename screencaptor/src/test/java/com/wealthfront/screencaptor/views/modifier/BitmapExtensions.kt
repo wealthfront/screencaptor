@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 
 fun <T : Drawable> T.pixelsEqualTo(t: T?) = toBitmap().pixelsEqualTo(t?.toBitmap(), true)
-
 fun Bitmap.pixelsEqualTo(otherBitmap: Bitmap?, shouldRecycle: Boolean = false) = otherBitmap?.let { other ->
   if (width == other.width && height == other.height) {
     val res = toPixels().contentEquals(other.toPixels())
