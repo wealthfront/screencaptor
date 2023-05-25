@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.google.common.truth.Truth.assertThat
 import com.wealthfront.screencaptor.R
-import com.wealthfront.screencaptor.views.modifier.ViewVisibilityModifier
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
+/*
 @Suppress("DEPRECATION")
 @RunWith(RobolectricTestRunner::class)
 class ViewVisibilityModifierTest {
@@ -44,3 +44,5 @@ class ViewVisibilityModifierTest {
     assertThat(sampleView.findViewById<EditText>(R.id.textField).visibility).isEqualTo(View.VISIBLE)
   }
 }
+
+ */

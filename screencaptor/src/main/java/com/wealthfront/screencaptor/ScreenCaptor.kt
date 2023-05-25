@@ -12,8 +12,10 @@ import androidx.test.espresso.IdlingRegistry
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
+import com.wealthfront.screencaptor.globalmutator.CursorHider
+import com.wealthfront.screencaptor.globalmutator.ViewTreeMutator
+import com.wealthfront.screencaptor.globalmutator.ScrollbarHider
 import com.wealthfront.screencaptor.idlingresource.ScreenshotIdlingResource
-import com.wealthfront.screencaptor.viewmutator.CursorMutator
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
@@ -28,7 +30,7 @@ object ScreenCaptor {
 
   private val SCREENSHOT = javaClass.simpleName
   private const val defaultScreenshotDirectory = "screenshots"
-  private val defaultMutators: Set<ViewMutation> = setOf(CursorMutator())
+  private val defaultGlobalMutations: Set<GlobalViewMutation> = setOf(CursorHider, ScrollbarHider)
 
   private fun getScreenshotFile(
     screenshotDirectory: String = defaultScreenshotDirectory,
@@ -106,7 +108,7 @@ object ScreenCaptor {
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
-    viewMutations.plus(defaultMutators).forEach { viewMutation ->
+    viewMutations.forEach { viewMutation ->
       with(viewMutation) {
         getPerformInteraction().perform(getPerformAction())
       }
@@ -121,6 +123,11 @@ object ScreenCaptor {
       screenshotFormat = screenshotFormat
     )
     activityScenario.onActivity { activity ->
+      ViewTreeMutator.Builder()
+        .addMutations(defaultGlobalMutations)
+        .build()
+        .mutate(activity)
+
       captureScreenshot(
         activity,
         screenshotFile,

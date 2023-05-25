@@ -1,4 +1,4 @@
-package com.wealthfront.screencaptor.views.mutator
+package com.wealthfront.screencaptor.globalmutator
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,7 +12,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment.application
 
-@Suppress("DEPRECATION")
 @RunWith(RobolectricTestRunner::class)
 class ViewTreeMutatorTest {
 
@@ -29,9 +28,9 @@ class ViewTreeMutatorTest {
     assertThat(textField.isCursorVisible).isTrue()
 
     ViewTreeMutator.Builder()
-      .viewMutators(setOf(CursorHider, ScrollbarHider))
-      .mutateView(viewToBeMutated)
-      .mutate()
+      .addMutations(setOf(CursorHider, ScrollbarHider))
+      .build()
+      .mutate(listOf(viewToBeMutated))
 
     assertThat(scrollView.isVerticalScrollBarEnabled).isFalse()
     assertThat(scrollView.isHorizontalScrollBarEnabled).isFalse()

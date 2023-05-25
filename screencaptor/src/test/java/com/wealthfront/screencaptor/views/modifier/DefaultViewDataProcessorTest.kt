@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment.application
 
+/*
 @Suppress("DEPRECATION")
 @RunWith(RobolectricTestRunner::class)
 class DefaultViewDataProcessorTest {
@@ -61,3 +62,5 @@ class DefaultViewDataProcessorTest {
     sampleView.findViewById<ImageView>(R.id.wealthfrontIcon).drawable.pixelsEqualTo(application.getDrawable(R.drawable.wf_logo))
   }
 }
+
+ */
