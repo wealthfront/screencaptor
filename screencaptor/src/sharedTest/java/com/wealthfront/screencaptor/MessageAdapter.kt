@@ -9,7 +9,7 @@ class MessageAdapter(private val messages: Array<String>) : RecyclerView.Adapter
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
     val view = LayoutInflater.from(parent.context)
-      .inflate(R.layout.message_row_item, parent, false)
+      .inflate(R.layout.message_row_item, parent, false) as TextView
 
     return MessageViewHolder(view)
   }

@@ -9,10 +9,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
@@ -25,7 +22,6 @@ import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
-import org.hamcrest.Matchers.anyOf
 import java.io.File
 import java.util.Locale.ENGLISH
 
@@ -112,25 +108,20 @@ object ScreenCaptor {
    * @param screenshotQuality specifies the level of compression of the screenshot.
    *
    */
-  // next thing to tackle is roots.
-  // Do dialogs and Activity views both work?
-  // .inRoot(RootMatchers.isDialog())
-
-  // will the tagging approach actually work for recycler views?
-  // I guess if we don't scroll in between screenshots...
   @Synchronized
   fun takeScreenshot(
     activityScenario: ActivityScenario<out AppCompatActivity>,
     screenshotName: String,
     screenshotNameSuffix: String = "",
-    viewMutations: Set<ViewMutation<*,*>> = setOf(),
+    viewMutations: Set<ViewMutation> = setOf(),
     screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
     viewMutations.forEach { viewMutation ->
-      val viewAction = viewMutation.viewMutator.getMutatorAction()
-      viewMutation.viewInteraction.perform(viewAction)
+      with(viewMutation) {
+        getPerformInteraction().perform(getPerformAction())
+      }
     }
     val idlingResource = ScreenshotIdlingResource()
 
@@ -148,9 +139,9 @@ object ScreenCaptor {
     }
 
     viewMutations.forEach { viewMutation ->
-      val viewAction = viewMutation.viewMutator.getRestorationAction()
-      // this restoration interaction sometimes fails, since we've modified it!!!
-      viewMutation.viewInteraction.perform(viewAction)
+      with(viewMutation) {
+        getRestoreInteraction().perform(getRestoreAction())
+      }
     }
   }
 

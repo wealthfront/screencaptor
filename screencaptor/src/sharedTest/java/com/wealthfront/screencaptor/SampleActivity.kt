@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class SampleActivity : AppCompatActivity() {
@@ -17,7 +19,16 @@ class SampleActivity : AppCompatActivity() {
         .setMessage("I am a Dialog")
         .show()
     }
+
+    val messageList = findViewById<RecyclerView>(R.id.messageList)
+    val layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+    messageList.layoutManager = layoutManager
+
+    val dividerItemDecoration = DividerItemDecoration(this, layoutManager.orientation)
+    messageList.addItemDecoration(dividerItemDecoration)
+
     val messages = arrayOf("Bulldog", "Corgi", "Mastiff", "Labrador Retriever", "Border Collie")
-    findViewById<RecyclerView>(R.id.messageList).adapter = MessageAdapter(messages)
+    messageList.adapter = MessageAdapter(messages)
+    messageList.adapter!!.notifyDataSetChanged()
   }
 }
