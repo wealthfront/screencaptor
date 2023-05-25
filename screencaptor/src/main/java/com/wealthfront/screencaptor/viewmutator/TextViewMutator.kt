@@ -3,7 +3,7 @@ package com.wealthfront.screencaptor.viewmutator
 import android.widget.TextView
 import com.wealthfront.screencaptor.R
 
-class TextMutator(content: CharSequence): ViewMutator<TextView, CharSequence>(TextView::class.java, content) {
+class TextViewMutator(content: CharSequence): ViewMutator<TextView, CharSequence>(TextView::class.java, content) {
   override fun key(): Int = R.id.content_mutator
 
   override fun originalViewState(view: TextView): CharSequence = view.text

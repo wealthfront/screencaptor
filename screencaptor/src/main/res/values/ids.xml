@@ -3,5 +3,5 @@
   <item type="id" name="random_id" />
   <item type="id" name="visibility_mutator" />
   <item type="id" name="content_mutator" />
-  <item type="id" name="cursor_mutator" />
+  <item type="id" name="image_mutator" />
 </resources>

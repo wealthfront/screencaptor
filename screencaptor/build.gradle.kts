@@ -58,12 +58,10 @@ dependencies {
     testImplementation(Dependencies.espressoContrib)
     testImplementation(Dependencies.testRules)
     testImplementation(Dependencies.testExtJunit)
-    testImplementation("com.github.romankh3:image-comparison:4.4.0")
 
     androidTestImplementation(Dependencies.junit)
     androidTestImplementation(Dependencies.testExtJunit)
     androidTestImplementation(Dependencies.testRules)
     androidTestImplementation(Dependencies.espressoCore)
     androidTestImplementation(Dependencies.espressoContrib)
-    androidTestImplementation("com.github.romankh3:image-comparison:4.4.0")
 }
