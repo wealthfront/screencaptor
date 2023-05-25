@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <item type="id" name="random_id" />
   <item type="id" name="visibility_mutator" />
   <item type="id" name="content_mutator" />
   <item type="id" name="image_mutator" />

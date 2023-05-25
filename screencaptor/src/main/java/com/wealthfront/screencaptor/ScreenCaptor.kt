@@ -13,8 +13,8 @@ import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
 import com.wealthfront.screencaptor.globalmutator.CursorHider
-import com.wealthfront.screencaptor.globalmutator.ViewTreeMutator
 import com.wealthfront.screencaptor.globalmutator.ScrollbarHider
+import com.wealthfront.screencaptor.globalmutator.ViewTreeMutator
 import com.wealthfront.screencaptor.idlingresource.ScreenshotIdlingResource
 import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
@@ -136,72 +136,6 @@ object ScreenCaptor {
         idlingResource.setScreenshotCaptured()
         IdlingRegistry.getInstance().unregister(idlingResource)
       }
-    }
-
-    viewMutations.forEach { viewMutation ->
-      with(viewMutation) {
-        getRestoreInteraction().perform(getRestoreAction())
-      }
-    }
-  }
-
-  /**
-   * Takes a screenshot whenever the method is called from the test thread or the main thread.
-   * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
-   * In this method, we post the operation to the main thread since we mutate the views and change
-   * the visibility of certain views before and after taking the screenshot.
-   *
-   * @param activity to be captured as the screenshot and saved on the path provided.
-   *
-   * @param screenshotName is the name of the file that the screenshot will be saved under.
-   * Usually, it's a pretty good idea to have this be pretty descriptive. By default, the name of
-   * the screenshot will have the device and sdk information attached to it.
-   *
-   * @param screenshotNameSuffix is an optional param to add a suffix to the name of the screenshot file.
-   *
-   * @param viewMutations allow you to mutate the view before capturing a screenshot
-   *
-   * @param screenshotDirectory allows you to specify where the screenshot taken should be saved in
-   * the device. Note: On devices above API 29, saving directly to an external storage in not allowed.
-   * So remember to pass in a valid path retrieved from the context as follows
-   * {@code context.filesDir or context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)}.
-   *
-   * @param screenshotFormat specifies the format of the screenshot file.
-   *
-   * @param screenshotQuality specifies the level of compression of the screenshot.
-   *
-   */
-  @Synchronized
-  fun takeScreenshot(
-    activity: Activity,
-    screenshotName: String,
-    screenshotNameSuffix: String = "",
-    viewMutations: Set<ViewMutation> = setOf(),
-    screenshotDirectory: String = defaultScreenshotDirectory,
-    screenshotFormat: ScreenshotFormat = PNG,
-    screenshotQuality: ScreenshotQuality = BEST
-  ) {
-    viewMutations.forEach { viewMutation ->
-      with(viewMutation) {
-        getPerformInteraction().perform(getPerformAction())
-      }
-    }
-
-    val idlingResource = ScreenshotIdlingResource()
-    IdlingRegistry.getInstance().register(idlingResource)
-    val screenshotFile = getScreenshotFile(
-      screenshotDirectory = screenshotDirectory,
-      screenshotName = screenshotName,
-      screenshotNameSuffix = screenshotNameSuffix,
-      screenshotFormat = screenshotFormat
-    )
-    captureScreenshot(
-      activity,
-      screenshotFile,
-      screenshotQuality
-    ) { screenshot ->
-      idlingResource.setScreenshotCaptured()
-      IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
     viewMutations.forEach { viewMutation ->

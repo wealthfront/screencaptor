@@ -29,17 +29,6 @@ android {
             isReturnDefaultValues = true
         }
     }
-
-    sourceSets {
-        this.getByName("androidTest"){
-            this.java.srcDir("src/sharedTest/java")
-            this.manifest.srcFile("src/sharedTest/AndroidManifest.xml")
-        }
-        this.getByName("test"){
-            this.java.srcDir("src/sharedTest/java")
-            this.manifest.srcFile("src/sharedTest/AndroidManifest.xml")
-        }
-    }
 }
 
 dependencies {
@@ -58,10 +47,12 @@ dependencies {
     testImplementation(Dependencies.espressoContrib)
     testImplementation(Dependencies.testRules)
     testImplementation(Dependencies.testExtJunit)
+    testImplementation(project(":screencaptor-test"))
 
     androidTestImplementation(Dependencies.junit)
     androidTestImplementation(Dependencies.testExtJunit)
     androidTestImplementation(Dependencies.testRules)
     androidTestImplementation(Dependencies.espressoCore)
     androidTestImplementation(Dependencies.espressoContrib)
+    androidTestImplementation(project(":screencaptor-test"))
 }

@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import com.wealthfront.screencaptor.test.R
 
 @RunWith(RobolectricTestRunner::class)
 class ImageMutatorTest {
@@ -20,7 +21,7 @@ class ImageMutatorTest {
       .addAttribute(android.R.attr.src, "@drawable/wf_logo")
       .build()
     val imageView = ImageView(context, attrSet)
-    val newDrawable = context.resources.getDrawable(com.wealthfront.screencaptor.R.drawable.add_accounts)
+    val newDrawable = context.resources.getDrawable(R.drawable.add_accounts)
     val mutator = ImageViewMutator(newDrawable)
     mutator.mutate(imageView)
     assertThat(imageView.drawable).isEqualTo(newDrawable)

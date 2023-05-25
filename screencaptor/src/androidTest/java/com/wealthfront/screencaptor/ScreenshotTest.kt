@@ -22,7 +22,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
-import com.wealthfront.screencaptor.R
 import com.wealthfront.screencaptor.recyclerviewmutator.RecyclerViewMutationOnItem
 import com.wealthfront.screencaptor.recyclerviewmutator.RecyclerViewTextMutator
 import com.wealthfront.screencaptor.viewmutator.ImageViewMutator
@@ -56,7 +55,7 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_dialog() {
-    onView(withId(R.id.showDialog)).perform(click())
+    onView(withId(TestRes.id.showDialog)).perform(click())
 
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
@@ -88,12 +87,12 @@ class ScreenshotTest {
       screenshotName = "screenshot_recyclerview",
       viewMutations = setOf(
         RecyclerViewMutationOnItem<RecyclerView.ViewHolder, TextView, CharSequence>(
-          withId(R.id.messageList),
+          withId(TestRes.id.messageList),
           withText("Corgi"),
           RecyclerViewTextMutator("Good boy")
         ),
         RecyclerViewMutationOnItem(
-          withId(R.id.messageList),
+          withId(TestRes.id.messageList),
           withText("Mastiff"),
           RecyclerViewTextMutator("Bad dog")
         )
@@ -101,9 +100,9 @@ class ScreenshotTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    onView(withId(R.id.messageList))
+    onView(withId(TestRes.id.messageList))
       .check(matches(RecyclerViewMatchers.hasItemWithText("Corgi")))
-    onView(withId(R.id.messageList))
+    onView(withId(TestRes.id.messageList))
       .check(matches(RecyclerViewMatchers.hasItemWithText("Mastiff")))
 
     Espresso.onIdle {
@@ -120,7 +119,7 @@ class ScreenshotTest {
       screenshotName = "screenshot_change_text",
       viewMutations = setOf(
         ViewMutationImpl(
-          withId(R.id.textView),
+          withId(TestRes.id.textView),
           TextViewMutator("Shorter text")
         )
       ),
@@ -139,13 +138,13 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_modifyImage() {
-    val newDrawable = getInstrumentation().context.getDrawable(R.drawable.add_accounts)!!
+    val newDrawable = getInstrumentation().context.getDrawable(TestRes.drawable.add_accounts)!!
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_change_image",
       viewMutations = setOf(
         ViewMutationImpl(
-          withId(R.id.wealthfrontIcon),
+          withId(TestRes.id.wealthfrontIcon),
           ImageViewMutator(newDrawable)
         )
       ),
@@ -166,14 +165,14 @@ class ScreenshotTest {
       screenshotName = "screenshot_no_logo",
       viewMutations = setOf(
         ViewMutationImpl(
-          withId(R.id.wealthfrontIcon),
+          withId(TestRes.id.wealthfrontIcon),
           VisibilityViewMutator(View.INVISIBLE)
         )
       ),
       screenshotDirectory = screenShotDirectory
     )
 
-    onView(withId(R.id.wealthfrontIcon))
+    onView(withId(TestRes.id.wealthfrontIcon))
       .check(matches(withEffectiveVisibility(VISIBLE)))
 
     Espresso.onIdle {

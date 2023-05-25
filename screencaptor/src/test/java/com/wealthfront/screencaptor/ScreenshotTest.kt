@@ -1,5 +1,6 @@
-package com.wealthfront.screencaptor.uitests
+package com.wealthfront.screencaptor
 
+import android.graphics.BitmapFactory
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -7,9 +8,8 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.wealthfront.screencaptor.R
-import com.wealthfront.screencaptor.SampleActivity
-import com.wealthfront.screencaptor.ScreenCaptor
+import androidx.test.platform.app.InstrumentationRegistry
+import com.wealthfront.screencaptor.test.R
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -39,16 +39,19 @@ class ScreenshotTest {
     val activityScenario = launchActivity<SampleActivity>()
 
     Espresso.onIdle()
-    activityScenario.onActivity { activity ->
-      ScreenCaptor.takeScreenshot(
-        activity = activity,
-        screenshotName = "screenshot_dialog",
-        screenshotDirectory = screenShotDirectory
-      )
-    }
+    ScreenCaptor.takeScreenshot(
+      activityScenario = activityScenario,
+      screenshotName = "screenshot_dialog",
+      screenshotDirectory = screenShotDirectory
+    )
 
     Espresso.onIdle {
       assertTrue(File(screenShotDirectory).exists())
+      val screenshot = File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
+      val actual = BitmapFactory.decodeFile(screenshot.path)
+      val expectedBytes = InstrumentationRegistry.getInstrumentation().context.resources.openRawResource(R.raw.dialog).readBytes()
+      val expected = BitmapFactory.decodeByteArray(expectedBytes, 0, expectedBytes.size)
+      assertTrue(actual.sameAs(expected))
     }
   }
 }

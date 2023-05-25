@@ -10,7 +10,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import com.google.common.truth.Truth.assertThat
-import com.wealthfront.screencaptor.R
+import com.wealthfront.screencaptor.test.R
 import org.junit.Test
 
 import org.junit.runner.RunWith
