@@ -2,13 +2,13 @@ package com.wealthfront.screencaptor
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.decodeByteArray
+import android.graphics.BitmapFactory.decodeFile
 import android.os.Environment
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RawRes
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -73,11 +73,7 @@ class ScreenshotTest {
       .inRoot(isDialog())
       .check(matches(isDisplayed()))
 
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      compareScreenshots("screenshot_dialog", TestRes.raw.dialog)
-    }
+    compareScreenshots("screenshot_dialog", TestRes.raw.dialog)
   }
 
   @Test
@@ -105,11 +101,7 @@ class ScreenshotTest {
     onView(withId(TestRes.id.messageList))
       .check(matches(RecyclerViewMatchers.hasItemWithText("Mastiff")))
 
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      compareScreenshots("screenshot_recyclerview", TestRes.raw.recycler_view)
-    }
+    compareScreenshots("screenshot_recyclerview", TestRes.raw.recycler_view)
   }
 
   @Test
@@ -129,11 +121,7 @@ class ScreenshotTest {
     onView(withText("Some sample data which is really long, so long that it wraps to another line and maybe even three lines"))
       .check(matches(isDisplayed()))
 
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      compareScreenshots("screenshot_change_text", TestRes.raw.change_text)
-    }
+    compareScreenshots("screenshot_change_text", TestRes.raw.change_text)
   }
 
   @Test
@@ -151,11 +139,7 @@ class ScreenshotTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      compareScreenshots("screenshot_change_image", TestRes.raw.change_image)
-    }
+    compareScreenshots("screenshot_change_image", TestRes.raw.change_image)
   }
 
   @Test
@@ -175,18 +159,14 @@ class ScreenshotTest {
     onView(withId(TestRes.id.wealthfrontIcon))
       .check(matches(withEffectiveVisibility(VISIBLE)))
 
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      assertTrue(File(screenShotDirectory).listFiles()!!.isNotEmpty())
-      compareScreenshots("screenshot_no_logo", TestRes.raw.no_logo)
-    }
+    compareScreenshots("screenshot_no_logo", TestRes.raw.no_logo)
   }
 
   private fun compareScreenshots(actualScreenShotName: String, @RawRes expectedScreenShotId: Int) {
     val screenshot = File(screenShotDirectory).listFiles()!!.find { it.name.contains(actualScreenShotName) }!!
-    val actual = BitmapFactory.decodeFile(screenshot.path)
+    val actual = decodeFile(screenshot.path)
     val expectedBytes = getInstrumentation().context.resources.openRawResource(expectedScreenShotId).readBytes()
-    val expected = BitmapFactory.decodeByteArray(expectedBytes, 0, expectedBytes.size)
+    val expected = decodeByteArray(expectedBytes, 0, expectedBytes.size)
     assertTrue(actual.sameAs(expected))
   }
 }

@@ -7,7 +7,7 @@ dependencies {
   implementation(Dependencies.recyclerView)
   implementation(Dependencies.espressoCore)
   implementation(Dependencies.espressoContrib)
-  implementation("androidx.appcompat:appcompat:1.5.1")
+  implementation(Dependencies.appCompat)
 }
 
 android {

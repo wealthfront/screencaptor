@@ -6,11 +6,11 @@ import android.widget.EditText
 import android.widget.ScrollView
 import androidx.core.widget.NestedScrollView
 import com.google.common.truth.Truth.assertThat
+import com.wealthfront.screencaptor.test.R
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment.application
-import com.wealthfront.screencaptor.test.R
 
 @RunWith(RobolectricTestRunner::class)
 class ViewTreeMutatorTest {

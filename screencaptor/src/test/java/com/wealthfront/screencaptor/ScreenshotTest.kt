@@ -1,6 +1,7 @@
 package com.wealthfront.screencaptor
 
-import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.decodeByteArray
+import android.graphics.BitmapFactory.decodeFile
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -8,28 +9,30 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.wealthfront.screencaptor.test.R
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.annotation.GraphicsMode
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ScreenshotTest {
 
-  private val screenShotDirectory: String = "build/test-results/screenshots"
+  @Rule
+  @JvmField
+  val folder = TemporaryFolder()
 
   @get:Rule
   var activityTestRule: ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
 
   @After
   fun cleanUpScreenshots() {
-    File(screenShotDirectory).deleteRecursively()
+    folder.root.deleteRecursively()
   }
 
   @Test
@@ -42,16 +45,13 @@ class ScreenshotTest {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityScenario,
       screenshotName = "screenshot_dialog",
-      screenshotDirectory = screenShotDirectory
+      screenshotDirectory = folder.root.path
     )
 
-    Espresso.onIdle {
-      assertTrue(File(screenShotDirectory).exists())
-      val screenshot = File(screenShotDirectory).listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
-      val actual = BitmapFactory.decodeFile(screenshot.path)
-      val expectedBytes = InstrumentationRegistry.getInstrumentation().context.resources.openRawResource(R.raw.dialog).readBytes()
-      val expected = BitmapFactory.decodeByteArray(expectedBytes, 0, expectedBytes.size)
-      assertTrue(actual.sameAs(expected))
-    }
+    val screenshot = folder.root.listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
+    val actual = decodeFile(screenshot.path)
+    val expectedBytes = getInstrumentation().context.resources.openRawResource(R.raw.dialog).readBytes()
+    val expected = decodeByteArray(expectedBytes, 0, expectedBytes.size)
+    assertTrue(actual.sameAs(expected))
   }
 }

@@ -36,7 +36,7 @@ dependencies {
     implementation(Dependencies.screenshotty)
     implementation(Dependencies.espressoCore)
     implementation(Dependencies.espressoContrib)
-    implementation("androidx.appcompat:appcompat:1.5.1")
+    implementation(Dependencies.appCompat)
 
     testImplementation(Dependencies.robolectric)
     testImplementation(Dependencies.testCore)

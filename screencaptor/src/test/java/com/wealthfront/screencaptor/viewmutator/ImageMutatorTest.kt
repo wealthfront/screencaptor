@@ -1,16 +1,14 @@
 package com.wealthfront.screencaptor.viewmutator
 
 import android.app.Application
-import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.google.common.truth.Truth.assertThat
+import com.wealthfront.screencaptor.test.R
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import com.wealthfront.screencaptor.test.R
 
 @RunWith(RobolectricTestRunner::class)
 class ImageMutatorTest {
