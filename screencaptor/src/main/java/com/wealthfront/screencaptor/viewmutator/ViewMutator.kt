@@ -4,7 +4,6 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.ViewMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 
@@ -21,21 +20,15 @@ abstract class ViewMutator<S : View, T>(private val viewClass: Class<S>, private
 
   fun restore(view: S) {
     val state = storedViewState(view)
-    restoreView(view, state)
+    mutateView(view, state)
     view.setTag(key(), null)
   }
 
   protected abstract fun mutateView(view: S, value: T)
 
-  protected abstract fun restoreView(view: S, value: T)
-
   @Suppress("UNCHECKED_CAST")
   private fun storedViewState(view: S): T {
     return view.getTag(key()) as T
-  }
-
-  fun getRestorationViewMatcher(): Matcher<View> {
-    return ViewMatchers.withTagKey(key())
   }
 
   fun getMutatorAction(): ViewAction {

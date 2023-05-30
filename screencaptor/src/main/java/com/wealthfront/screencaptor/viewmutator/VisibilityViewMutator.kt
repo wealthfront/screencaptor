@@ -3,16 +3,12 @@ package com.wealthfront.screencaptor.viewmutator
 import android.view.View
 import com.wealthfront.screencaptor.R
 
-class VisibilityViewMutator(visibility: Int) : ViewMutator<View, Int>(View::class.java, visibility) {
+class VisibilityViewMutator<S : View>(classType: Class<S>,visibility: Int) : ViewMutator<S, Int>(classType, visibility) {
   override fun key(): Int = R.id.visibility_mutator
 
-  override fun originalViewState(view: View): Int = view.visibility
+  override fun originalViewState(view: S): Int = view.visibility
 
-  override fun mutateView(view: View, value: Int) {
-    view.visibility = value
-  }
-
-  override fun restoreView(view: View, value: Int) {
+  override fun mutateView(view: S, value: Int) {
     view.visibility = value
   }
 }

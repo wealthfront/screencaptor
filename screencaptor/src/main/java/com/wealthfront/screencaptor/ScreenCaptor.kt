@@ -104,13 +104,14 @@ object ScreenCaptor {
     screenshotName: String,
     screenshotNameSuffix: String = "",
     viewMutations: Set<ViewMutation> = setOf(),
+    globalViewMutations: Set<GlobalViewMutation> = setOf(),
     screenshotDirectory: String = defaultScreenshotDirectory,
     screenshotFormat: ScreenshotFormat = PNG,
     screenshotQuality: ScreenshotQuality = BEST
   ) {
     viewMutations.forEach { viewMutation ->
       with(viewMutation) {
-        getPerformInteraction().perform(getPerformAction())
+        getViewInteraction().perform(getPerformAction())
       }
     }
 
@@ -125,6 +126,7 @@ object ScreenCaptor {
     activityScenario.onActivity { activity ->
       ViewTreeMutator.Builder()
         .addMutations(defaultGlobalMutations)
+        .addMutations(globalViewMutations)
         .build()
         .mutate(activity)
 
@@ -140,7 +142,7 @@ object ScreenCaptor {
 
     viewMutations.forEach { viewMutation ->
       with(viewMutation) {
-        getRestoreInteraction().perform(getRestoreAction())
+        getViewInteraction().perform(getRestoreAction())
       }
     }
   }

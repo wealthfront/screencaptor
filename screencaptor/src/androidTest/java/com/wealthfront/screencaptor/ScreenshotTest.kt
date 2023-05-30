@@ -8,12 +8,14 @@ import android.os.Environment
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RawRes
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -62,9 +64,9 @@ class ScreenshotTest {
       screenshotName = "screenshot_dialog",
       viewMutations = setOf(
         ViewMutationImpl(
-          withText("I am a Dialog"),
+          onView(isAssignableFrom(AppCompatTextView::class.java)).inRoot(isDialog()),
           TextViewMutator("dialogic")
-        ) { it.inRoot(isDialog()) }
+        )
       ),
       screenshotDirectory = screenShotDirectory
     )
@@ -83,12 +85,12 @@ class ScreenshotTest {
       screenshotName = "screenshot_recyclerview",
       viewMutations = setOf(
         RecyclerViewMutationOnItem<RecyclerView.ViewHolder, TextView, CharSequence>(
-          withId(TestRes.id.messageList),
+          onView(withId(TestRes.id.messageList)),
           withText("Corgi"),
           RecyclerViewTextMutator("Good boy")
         ),
         RecyclerViewMutationOnItem(
-          withId(TestRes.id.messageList),
+          onView(withId(TestRes.id.messageList)),
           withText("Mastiff"),
           RecyclerViewTextMutator("Bad dog")
         )
@@ -111,7 +113,7 @@ class ScreenshotTest {
       screenshotName = "screenshot_change_text",
       viewMutations = setOf(
         ViewMutationImpl(
-          withId(TestRes.id.textView),
+          onView(withId(TestRes.id.textView)),
           TextViewMutator("Shorter text")
         )
       ),
@@ -132,7 +134,7 @@ class ScreenshotTest {
       screenshotName = "screenshot_change_image",
       viewMutations = setOf(
         ViewMutationImpl(
-          withId(TestRes.id.wealthfrontIcon),
+          onView(withId(TestRes.id.wealthfrontIcon)),
           ImageViewMutator(newDrawable)
         )
       ),
@@ -149,8 +151,8 @@ class ScreenshotTest {
       screenshotName = "screenshot_no_logo",
       viewMutations = setOf(
         ViewMutationImpl(
-          withId(TestRes.id.wealthfrontIcon),
-          VisibilityViewMutator(View.INVISIBLE)
+          onView(withId(TestRes.id.wealthfrontIcon)),
+          VisibilityViewMutator(View::class.java, View.INVISIBLE)
         )
       ),
       screenshotDirectory = screenShotDirectory

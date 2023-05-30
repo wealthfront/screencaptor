@@ -18,7 +18,7 @@ class VisibilityViewMutatorTest {
       .build()
     val textView = TextView(getApplicationContext(), attrSet)
 
-    val mutator = VisibilityViewMutator(View.INVISIBLE)
+    val mutator = VisibilityViewMutator(View::class.java, View.INVISIBLE)
     mutator.mutate(textView)
     assertThat(textView.visibility).isEqualTo(View.INVISIBLE)
     mutator.restore(textView)
