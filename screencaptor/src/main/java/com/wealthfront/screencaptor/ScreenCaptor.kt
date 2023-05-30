@@ -73,10 +73,7 @@ object ScreenCaptor {
   }
 
   /**
-   * Takes a screenshot whenever the method is called from the test thread or the main thread.
-   * Also note that the operation takes place entirely on the main thread in a synchronized fashion.
-   * In this method, we post the operation to the main thread since we mutate the views and change
-   * the visibility of certain views before and after taking the screenshot.
+   * Takes a screenshot. Can be called from the test thread or the main thread.
    *
    * @param activityScenario to be captured as the screenshot and saved on the path provided.
    *
@@ -86,12 +83,14 @@ object ScreenCaptor {
    *
    * @param screenshotNameSuffix is an optional param to add a suffix to the name of the screenshot file.
    *
-   * @param viewMutations allow you to mutate the view before capturing a screenshot
+   * @param viewMutations mutate specific views before capturing a screenshot.
+   *
+   * @param globalViewMutations mutations that will be applied to the entire view tree.
    *
    * @param screenshotDirectory allows you to specify where the screenshot taken should be saved in
    * the device. Note: On devices above API 29, saving directly to an external storage in not allowed.
-   * So remember to pass in a valid path retrieved from the context as follows
-   * {@code context.filesDir or context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)}.
+   * It's recommended to pass in an app-specific path retrieved from the context e.g.
+   * {@code context.filesDir} or {@code context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)}.
    *
    * @param screenshotFormat specifies the format of the screenshot file.
    *
