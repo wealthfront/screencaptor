@@ -2,6 +2,7 @@ package com.wealthfront.screencaptor.recyclerviewmutator
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
@@ -16,6 +17,12 @@ class RecyclerViewMutationOnItem<VH : RecyclerView.ViewHolder, S : View, T>(
   private val recyclerViewItemMatcher: Matcher<View>,
   private val viewMutator: RecyclerViewMutator<S, T>
 ) : ViewMutation {
+
+  constructor(
+    recyclerViewMatcher: Matcher<View>,
+    recyclerViewItemMatcher: Matcher<View>,
+    viewMutator: RecyclerViewMutator<S, T>
+  ) : this(onView(recyclerViewMatcher), recyclerViewItemMatcher, viewMutator)
 
   override fun getViewInteraction(): ViewInteraction = recyclerViewInteraction
 
@@ -41,6 +48,13 @@ class RecyclerViewMutationOnPosition<VH : RecyclerView.ViewHolder, S : View, T>(
   private val position: Int,
   private val viewMutator: RecyclerViewMutator<S, T>
 ) : ViewMutation {
+
+  constructor(
+    recyclerViewMatcher: Matcher<View>,
+    position: Int,
+    viewMutator: RecyclerViewMutator<S, T>
+  ) : this(onView(recyclerViewMatcher), position, viewMutator)
+
   override fun getViewInteraction(): ViewInteraction = recyclerViewInteraction
 
   override fun getPerformAction(): ViewAction {

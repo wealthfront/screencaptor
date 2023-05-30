@@ -85,12 +85,12 @@ class ScreenshotTest {
       screenshotName = "screenshot_recyclerview",
       viewMutations = setOf(
         RecyclerViewMutationOnItem<RecyclerView.ViewHolder, TextView, CharSequence>(
-          onView(withId(TestRes.id.messageList)),
+          withId(TestRes.id.messageList),
           withText("Corgi"),
           RecyclerViewTextMutator("Good boy")
         ),
         RecyclerViewMutationOnItem(
-          onView(withId(TestRes.id.messageList)),
+          withId(TestRes.id.messageList),
           withText("Mastiff"),
           RecyclerViewTextMutator("Bad dog")
         )
@@ -113,7 +113,7 @@ class ScreenshotTest {
       screenshotName = "screenshot_change_text",
       viewMutations = setOf(
         ViewMutationImpl(
-          onView(withId(TestRes.id.textView)),
+          withId(TestRes.id.textView),
           TextViewMutator("Shorter text")
         )
       ),
@@ -134,7 +134,7 @@ class ScreenshotTest {
       screenshotName = "screenshot_change_image",
       viewMutations = setOf(
         ViewMutationImpl(
-          onView(withId(TestRes.id.wealthfrontIcon)),
+          withId(TestRes.id.wealthfrontIcon),
           ImageViewMutator(newDrawable)
         )
       ),
@@ -151,7 +151,7 @@ class ScreenshotTest {
       screenshotName = "screenshot_no_logo",
       viewMutations = setOf(
         ViewMutationImpl(
-          onView(withId(TestRes.id.wealthfrontIcon)),
+          withId(TestRes.id.wealthfrontIcon),
           VisibilityViewMutator(View::class.java, View.INVISIBLE)
         )
       ),
