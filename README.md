@@ -5,17 +5,17 @@ Simple Android library to capture screenshots deterministically
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wealthfront/screencaptor/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wealthfront/screencaptor)
 
 ## Features
-* Capture a screenshot of any view in your integration tests
-* Dynamically hide views from your screenshots (Eg. Dates, Account Value, etc)
-* Use `ViewMutators` to mutate various types of views as needed
-* Use `ViewModifiers` to allow supplying sample data for screenshots (which will be reset after the screeenshot)
+* Capture a screenshot of any Activity in your integration tests
+* Hide Views from your screenshots (Eg. Dates, Account Value, etc)
+* Override View's contents for screenshot purposes
+* Globally modify certain types of Views, e.g. hiding scrollbars or cursors
 
 ## Download
 
 Add this dependency in your build.gradle:
 
 ```groovy
-implementation 'com.wealthfront:screencaptor:1.2.0'
+implementation 'com.wealthfront:screencaptor:2.0.0'
 ```
 
 ## How do I capture a screenshot?
@@ -27,25 +27,26 @@ ScreenCaptor.takeScreenshot(view = rootView, screenshotName = "my_favorite_scree
 There are other configurations that you can pass in as well,
 
 * `screenshotNameSuffix` - for any suffix that you want to attach to your screenshot
-* `viewIdsToExclude` - takes in a set of ids to exclude from the screenshot
-* `viewModifiers` - takes in a set of data modifiers which will be processed by the [viewDataProcessor]
-* `viewDataProcessor` - allows you to pass in a custom view modification processor.
-* `viewMutators` - allows you to mutate the subclasses of views in any particular way (Hides scrollbars and cursors by default)
+* `viewMutations` - takes in a set of [ViewMutation]s which will modify specific views. These mutations are automatically rolled back after the screeenshot is taken
+* `globalViewMutations` - takes in a set of [GlobalViewMutation]s which will modify the entire view
 * `screenshotDirectory` - specify which directory you want to save the screenshot in (sdcard/screenshots/ by default)
 * `screenshotFormat` - whether the format needs to be JPEG, PNG or WEBP (PNG by default)
 * `screenshotQuality` - specify the quality of the screenshot (Best quality by default)
 
-**Note**: You can disable the default mutators by passing in an empty set for the `viewMutators` argument in the `takeScreenshot` method.
-
-Here's an example of a complex screencaptor setup:
+Here's an example of a complex ScreenCaptor setup:
 
 ```kotlin
 ScreenCaptor.takeScreenshot(
-  view = rootView,
+  activityScenario = myActivityScenario,
   screenshotName = "my_favorite_screenshot",
   screenshotNameSuffix = "latest",
-  viewModifiers = = setOf(TextViewDataModifier(R.id.date, "01/01/2000"))
-  viewIdsToExclude = setOf(R.id.date, R.id.account_value),
+  viewMutations = setOf(
+    ViewMutationImpl(
+      allOf(withId(R.id.secondaryValue), isDescendantOfA(withId(R.id.infoCard))),
+      VisibilityViewMutator(View::class.java, INVISIBLE)
+    )
+  ), 
+  globalViewMutations = emptySet(),
   screenshotFormat = JPEG,
   screenshotQuality = BEST
 )
@@ -60,7 +61,7 @@ Instead of using AndroidX's implementation of screenshot which utilizes the UiAu
 
 ### Handling Dynamic data within views
 
-This is a pretty common case that we run into where we have a dynamic piece of data displayed on the view that might change with every run of the test. The classic example is any date that gets displayed on the screen. And for this, we have a way of disabling/hiding these views when we take the screenshot using the  **ViewVisibilityModifier**. This turns the views to be  **INVISIBLE** right before taking the screenshot and turns the views to their initial state after the screenshot is taken.
+This is a pretty common case that we run into where we have a dynamic piece of data displayed on the view that might change with every run of the test. The classic example is any date that gets displayed on the screen. And for this, we have a way of disabling/hiding these views when we take the screenshot using the **VisibilityViewMutator**. This turns the views to be  **INVISIBLE** right before taking the screenshot and turns the views to their initial state after the screenshot is taken.
 
 ### Disabling cursor and scrollbars
 
@@ -77,7 +78,7 @@ This helps us address a class of bugs before our app rolls out to production :)
 
 ## License
 ```
-Copyright 2020 Wealthfront, Inc.
+Copyright 2023 Wealthfront, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

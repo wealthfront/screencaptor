@@ -1,5 +1,10 @@
 Change Log
 ==========
+Version 2.0.0 *(2023-05-30)*
+----------------------------
+
+* Use Espresso API to specify views for modification
+* Introduce ViewMutation and GlobalViewMutation interfaces
 
 Version 1.2.0 *(2023-04-19)*
 ----------------------------
