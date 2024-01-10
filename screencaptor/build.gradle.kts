@@ -7,6 +7,8 @@ apply(from = "../gradle/gradle-mvn-push.gradle")
 apply(from = "../gradle/android-module.gradle")
 
 android {
+    namespace = "com.wealthfront.screencaptor"
+
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

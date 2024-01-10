@@ -1,4 +1,4 @@
 object Versions {
-  const val androidLibraryVersion = "7.4.2"
+  const val androidLibraryVersion = "8.2.1"
   const val kotlinVersion = "1.8.22"
 }
