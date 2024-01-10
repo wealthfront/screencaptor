@@ -4,18 +4,16 @@ plugins {
 }
 
 dependencies {
-  implementation(Dependencies.recyclerView)
-  implementation(Dependencies.espressoCore)
-  implementation(Dependencies.espressoContrib)
-  implementation(Dependencies.appCompat)
+  implementation(libs.recyclerview)
+  implementation(libs.espresso.core)
+  implementation(libs.espresso.contrib)
+  implementation(libs.appcompat)
 }
 
-android {
-  this.compileSdk = Versions.compileSdkVersion
+apply(from = "../gradle/android-module.gradle")
 
+android {
   defaultConfig {
-    this.minSdk = Versions.minSdkVersion
-    this.targetSdk = Versions.targetSdkVersion
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
