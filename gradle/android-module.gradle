@@ -1,0 +1,25 @@
+android {
+  compileSdkVersion 34
+
+  defaultConfig {
+    minSdkVersion 26
+    targetSdkVersion 33
+  }
+
+  compileOptions {
+    setSourceCompatibility(Versions.javaVersion)
+    setTargetCompatibility(Versions.javaVersion)
+  }
+
+  testOptions {
+    animationsDisabled = true
+    unitTests {
+      includeAndroidResources = true
+      returnDefaultValues = true
+    }
+  }
+
+  kotlinOptions {
+    jvmTarget = Versions.javaVersion.toString()
+  }
+}
