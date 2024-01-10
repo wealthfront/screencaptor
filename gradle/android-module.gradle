@@ -5,4 +5,17 @@ android {
     minSdkVersion 26
     targetSdkVersion 33
   }
+
+  compileOptions {
+    setSourceCompatibility(JavaVersion.VERSION_17)
+    setTargetCompatibility(JavaVersion.VERSION_17)
+  }
+
+  testOptions {
+    animationsDisabled = true
+    unitTests {
+      includeAndroidResources = true
+      returnDefaultValues = true
+    }
+  }
 }
