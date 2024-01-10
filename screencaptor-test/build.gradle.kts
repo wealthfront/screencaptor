@@ -17,9 +17,5 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  kotlinOptions {
-    jvmTarget = "1.8"
-  }
-
   namespace = "com.wealthfront.screencaptor.test"
 }

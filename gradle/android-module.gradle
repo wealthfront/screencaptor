@@ -7,8 +7,8 @@ android {
   }
 
   compileOptions {
-    setSourceCompatibility(JavaVersion.VERSION_17)
-    setTargetCompatibility(JavaVersion.VERSION_17)
+    setSourceCompatibility(Versions.javaVersion)
+    setTargetCompatibility(Versions.javaVersion)
   }
 
   testOptions {
@@ -17,5 +17,9 @@ android {
       includeAndroidResources = true
       returnDefaultValues = true
     }
+  }
+
+  kotlinOptions {
+    jvmTarget = Versions.javaVersion.toString()
   }
 }
