@@ -4,7 +4,7 @@ import android.view.View
 import com.wealthfront.screencaptor.R
 
 class VisibilityViewMutator<S : View>(classType: Class<S>,visibility: Int) : ViewMutator<S, Int>(classType, visibility) {
-  override fun key(): Int = R.id.visibility_mutator
+  override fun key(): Int = R.id.screencaptor_visibility_mutator
 
   override fun originalViewState(view: S): Int = view.visibility
 
