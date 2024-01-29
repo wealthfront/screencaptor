@@ -1,6 +1,6 @@
 plugins {
-    id(Plugins.androidLibrary)
-    id(Plugins.kotlinAndroid)
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinAndroid)
 }
 
 apply(from = "../gradle/gradle-mvn-push.gradle")
@@ -8,6 +8,7 @@ apply(from = "../gradle/android-module.gradle")
 
 android {
     namespace = "com.wealthfront.screencaptor"
+    resourcePrefix = "screencaptor"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

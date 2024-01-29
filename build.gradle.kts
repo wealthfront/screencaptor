@@ -1,4 +1,4 @@
 plugins {
-    id(Plugins.androidLibrary).version(Versions.androidLibraryVersion).apply(false)
-    id(Plugins.kotlinAndroid).version(Versions.kotlinVersion).apply(false)
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.kotlinAndroid) apply false
 }
