@@ -27,8 +27,6 @@ dependencies {
     testImplementation(libs.androidx.test.ktx)
     testImplementation(libs.junit)
     testImplementation(libs.truth)
-    testImplementation(libs.espresso.core)
-    testImplementation(libs.espresso.contrib)
     testImplementation(libs.androidx.test.rules)
     testImplementation(libs.androidx.test.junit)
 }
