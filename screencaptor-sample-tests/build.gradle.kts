@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-  namespace = "com.wealthfront.screencaptor.instrumentedtest"
+  namespace = "com.wealthfront.screencaptor.sample.test"
   compileSdk = 34
 
   defaultConfig {

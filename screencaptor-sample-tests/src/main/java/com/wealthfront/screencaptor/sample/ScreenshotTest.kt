@@ -1,4 +1,4 @@
-package com.wealthfront.screencaptor.instrumentedtest
+package com.wealthfront.screencaptor.sample
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -29,7 +29,6 @@ import com.wealthfront.screencaptor.RecyclerViewMatchers
 import com.wealthfront.screencaptor.ScreenCaptor
 import com.wealthfront.screencaptor.recyclerviewmutator.RecyclerViewMutationOnItem
 import com.wealthfront.screencaptor.recyclerviewmutator.RecyclerViewTextMutator
-import com.wealthfront.screencaptor.sample.SampleActivity
 import com.wealthfront.screencaptor.viewmutator.ImageViewMutator
 import com.wealthfront.screencaptor.viewmutator.TextViewMutator
 import com.wealthfront.screencaptor.viewmutator.ViewMutationImpl
@@ -40,8 +39,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import com.wealthfront.screencaptor.instrumentedtest.R as TestRes
 import com.wealthfront.screencaptor.sample.R as AppRes
+import com.wealthfront.screencaptor.sample.test.R as TestRes
 
 @RunWith(AndroidJUnit4::class)
 class ScreenshotTest {
