@@ -18,6 +18,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.annotation.GraphicsMode
+import com.wealthfront.screencaptor.sample.impl.test.R as TestRes
 
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(org.robolectric.annotation.GraphicsMode.Mode.NATIVE)
@@ -50,7 +51,9 @@ class ScreenshotTest {
 
     val screenshot = folder.root.listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
     val actual = decodeFile(screenshot.path)
-    val expectedBytes = getInstrumentation().context.resources.openRawResource(R.raw.dialog).readBytes()
+
+
+    val expectedBytes = getInstrumentation().context.resources.openRawResource(TestRes.raw.dialog).readBytes()
     val expected = decodeByteArray(expectedBytes, 0, expectedBytes.size)
     assertTrue(actual.sameAs(expected))
   }
