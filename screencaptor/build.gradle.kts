@@ -31,12 +31,4 @@ dependencies {
     testImplementation(libs.espresso.contrib)
     testImplementation(libs.androidx.test.rules)
     testImplementation(libs.androidx.test.junit)
-    testImplementation(project(":screencaptor-test"))
-
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.espresso.contrib)
-    androidTestImplementation(project(":screencaptor-test"))
 }
