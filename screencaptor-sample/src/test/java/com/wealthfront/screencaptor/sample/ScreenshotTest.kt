@@ -18,22 +18,24 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.annotation.GraphicsMode
+import java.io.File
 import com.wealthfront.screencaptor.sample.R as AppRes
 
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ScreenshotTest {
 
-  @Rule
-  @JvmField
-  val folder = TemporaryFolder()
+  // @Rule
+  // @JvmField
+  val folder = File(System.getProperty("user.dir"))
+  // val folder = TemporaryFolder()
 
   @get:Rule
   var activityTestRule: ActivityScenarioRule<SampleActivity> = ActivityScenarioRule(SampleActivity::class.java)
 
   @After
   fun cleanUpScreenshots() {
-    folder.root.deleteRecursively()
+    // folder.root.deleteRecursively()
   }
 
   @Test
@@ -46,12 +48,13 @@ class ScreenshotTest {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityScenario,
       screenshotName = "screenshot_dialog",
-      screenshotDirectory = folder.root.path
+      screenshotDirectory = folder.path
+      // screenshotDirectory = folder.root.path
     )
 
-    val screenshot = folder.root.listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
+    val screenshot = folder.listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
+    // val screenshot = folder.root.listFiles()!!.find { it.name.contains("screenshot_dialog") }!!
     val actual = decodeFile(screenshot.path)
-
 
     val expectedBytes = getInstrumentation().context.resources.openRawResource(AppRes.raw.dialog)
       .readBytes()
