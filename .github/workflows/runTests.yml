@@ -30,7 +30,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: testDebugUnitTest
-      - uses: actions/upload-artifact@v4
+      - name: Archive screenshot
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           path: "**/*.png"
           retention-days: 2
