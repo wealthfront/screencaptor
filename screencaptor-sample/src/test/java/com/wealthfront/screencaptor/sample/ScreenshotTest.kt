@@ -21,7 +21,7 @@ import org.robolectric.annotation.GraphicsMode
 import com.wealthfront.screencaptor.sample.R as AppRes
 
 @RunWith(AndroidJUnit4::class)
-@GraphicsMode(org.robolectric.annotation.GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ScreenshotTest {
 
   @Rule
