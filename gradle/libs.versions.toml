@@ -9,7 +9,7 @@ test-ext = "1.1.5"
 junit = "4.13.2"
 truth = "1.0"
 espresso = "3.5.1"
-agp = "8.2.1"
+agp = "8.2.2"
 kotlin = "1.8.22"
 
 [libraries]
@@ -27,5 +27,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espresso" }
 
 [plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidTest = { id = "com.android.test", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

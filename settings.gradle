@@ -15,4 +15,8 @@ dependencyResolutionManagement {
 }
 
 include ':screencaptor'
-include ':screencaptor-test'
+include ':screencaptor-sample'
+include ':screencaptor-sample-tests'
+include ':screencaptor-sample:application'
+include ':screencaptor-sample:impl'
+include ':internal-test-support'
