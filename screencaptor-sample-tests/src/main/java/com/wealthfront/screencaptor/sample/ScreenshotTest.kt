@@ -70,15 +70,11 @@ class ScreenshotTest {
 
   @Test
   fun takeScreenshot_dialog() {
-    val myDir = File(screenShotDirectory, "folder")
-    Log.e("asdsadaaa", myDir.mkdir().toString())
-    Log.e("asdsadaa", screenShotDirectory)
-
     onView(withId(AppRes.id.showDialog)).perform(click())
 
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
-      screenshotName = "screenshot_dialogsadsdasd",
+      screenshotName = "screenshot_dialog",
       viewMutations = setOf(
         ViewMutationImpl(
           onView(isAssignableFrom(AppCompatTextView::class.java)).inRoot(isDialog()),
@@ -162,7 +158,7 @@ class ScreenshotTest {
   }
 
   @Test
-  fun takeScreenshotExclude() {
+  fun takeScreenshot_exclude() {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_no_logo",
