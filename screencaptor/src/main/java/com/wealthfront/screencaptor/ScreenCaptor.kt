@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -13,10 +12,9 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.Root
+import androidx.test.platform.app.InstrumentationRegistry
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
@@ -31,8 +29,6 @@ import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale.ENGLISH
-import androidx.test.espresso.base.RootsOracle_Factory
-import androidx.test.platform.app.InstrumentationRegistry
 
 /**
  * Has the ability to take a screenshot of the current view displayed on the screen using the method [takeScreenshot].
@@ -191,6 +187,28 @@ object ScreenCaptor {
     }
   }
 
+  /**
+   * Takes a screenshot of a compose node. Not meant to capture PopUp since it is in a different window. Can be called from the test thread or the main thread.
+   *
+   * @param composeRule is the composeTestRule where the content has been set.
+   *
+   * @param screenshotName is the name of the file that the screenshot will be saved under.
+   * Usually, it's a pretty good idea to have this be pretty descriptive. By default, the name of
+   * the screenshot will have the device and sdk information attached to it.
+   *
+   * @param screenshotNameSuffix is an optional param to add a suffix to the name of the screenshot file.
+   *
+   * @param screenshotDirectory allows you to specify where the screenshot taken should be saved in
+   * the device. Note: On devices above API 29, saving directly to an external storage in not allowed.
+   * It's recommended to pass in an app-specific path retrieved from the context e.g.
+   * {@code context.filesDir} or {@code context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)}.
+   *
+   * @param screenshotFormat specifies the format of the screenshot file.
+   *
+   * @param screenshotQuality specifies the level of compression of the screenshot.
+   *
+   * @param rootMatcher specifies the node to capture. Captures root if null
+   */
   @Synchronized
   fun takeScreenshot(
     composeRule: ComposeTestRule,
@@ -211,6 +229,24 @@ object ScreenCaptor {
     captureScreenshot(composeRule, screenshotFile, screenshotQuality, rootMatcher)
   }
 
+  /**
+   * Takes a screenshot of the whole screen including any PopUp
+   *
+   * @param screenshotName is the name of the file that the screenshot will be saved under.
+   * Usually, it's a pretty good idea to have this be pretty descriptive. By default, the name of
+   * the screenshot will have the device and sdk information attached to it.
+   *
+   * @param screenshotNameSuffix is an optional param to add a suffix to the name of the screenshot file.
+   *
+   * @param screenshotDirectory allows you to specify where the screenshot taken should be saved in
+   * the device. Note: On devices above API 29, saving directly to an external storage in not allowed.
+   * It's recommended to pass in an app-specific path retrieved from the context e.g.
+   * {@code context.filesDir} or {@code context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)}.
+   *
+   * @param screenshotFormat specifies the format of the screenshot file.
+   *
+   * @param screenshotQuality specifies the level of compression of the screenshot.
+   */
   @Synchronized
   fun takeScreenshot(
     screenshotName: String,
