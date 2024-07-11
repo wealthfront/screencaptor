@@ -5,11 +5,23 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.graphics.BitmapFactory.decodeByteArray
 import android.graphics.BitmapFactory.decodeFile
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RawRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -33,7 +45,6 @@ import com.wealthfront.screencaptor.viewmutator.ImageViewMutator
 import com.wealthfront.screencaptor.viewmutator.TextViewMutator
 import com.wealthfront.screencaptor.viewmutator.ViewMutationImpl
 import com.wealthfront.screencaptor.viewmutator.VisibilityViewMutator
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -54,18 +65,20 @@ class ScreenshotTest {
   @get:Rule
   var permissionsRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
 
-  @After
-  fun cleanUpScreenshots() {
-    File(screenShotDirectory).deleteRecursively()
-  }
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
   @Test
   fun takeScreenshot_dialog() {
+    val myDir = File(screenShotDirectory, "folder")
+    Log.e("asdsadaaa", myDir.mkdir().toString())
+    Log.e("asdsadaa", screenShotDirectory)
+
     onView(withId(AppRes.id.showDialog)).perform(click())
 
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
-      screenshotName = "screenshot_dialog",
+      screenshotName = "screenshot_dialogsadsdasd",
       viewMutations = setOf(
         ViewMutationImpl(
           onView(isAssignableFrom(AppCompatTextView::class.java)).inRoot(isDialog()),
@@ -149,7 +162,7 @@ class ScreenshotTest {
   }
 
   @Test
-  fun takeScreenshot_exclude() {
+  fun takeScreenshotExclude() {
     ScreenCaptor.takeScreenshot(
       activityScenario = activityTestRule.scenario,
       screenshotName = "screenshot_no_logo",
@@ -166,6 +179,32 @@ class ScreenshotTest {
       .check(matches(withEffectiveVisibility(VISIBLE)))
 
     compareScreenshots("screenshot_no_logo", TestRes.raw.no_logo)
+  }
+
+  @Test
+  fun takeScreenshot_compose() {
+    composeTestRule.setContent {
+      MaterialTheme {
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .background(Color.LightGray)
+            .padding(24.dp),
+          verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+          DemoUI()
+        }
+      }
+    }
+    composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
+
+    ScreenCaptor.takeScreenshot(
+      composeRule = composeTestRule,
+      screenshotName = "compose",
+      screenshotDirectory = screenShotDirectory
+    )
+
+    compareScreenshots("compose", TestRes.raw.compose_pixe7)
   }
 
   private fun compareScreenshots(actualScreenShotName: String, @RawRes expectedScreenShotId: Int) {

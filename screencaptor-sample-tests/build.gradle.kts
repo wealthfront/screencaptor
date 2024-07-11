@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.androidTest)
   alias(libs.plugins.kotlinAndroid)
+  alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -18,7 +19,12 @@ android {
   }
   kotlinOptions {
     jvmTarget = "1.8"
+    freeCompilerArgs += listOf(
+      "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+      "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+    )
   }
+
 
   targetProjectPath(":screencaptor-sample")
 }
@@ -35,4 +41,15 @@ dependencies {
   implementation(libs.espresso.contrib)
   implementation(libs.androidx.test.rules)
   implementation(libs.androidx.test.junit)
+
+  implementation(enforcedPlatform(libs.compose.bom))
+  implementation(libs.compose.foundation)
+  implementation(libs.compose.ui)
+  implementation(libs.compose.tooling)
+  implementation(libs.compose.tooling.preview)
+  implementation(libs.compose.material)
+  implementation(libs.compose.material3)
+  implementation(libs.compose.manifest)
+  implementation(libs.compose.junit4)
+  implementation(libs.compose.junit4)
 }

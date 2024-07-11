@@ -7,6 +7,11 @@ import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onRoot
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingRegistry
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
@@ -21,6 +26,7 @@ import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import java.io.File
+import java.io.FileOutputStream
 import java.util.Locale.ENGLISH
 
 /**
@@ -70,6 +76,19 @@ object ScreenCaptor {
 
         onSuccess.invoke(screenshot)
       }, { throwable -> throw throwable })
+  }
+
+  private fun captureScreenshot(
+    composeRule: ComposeTestRule,
+    screenshotFile: File,
+    screenshotQuality: ScreenshotQuality = BEST,
+    rootMatcher: SemanticsMatcher? = null
+  ) {
+    val rootNode = if (rootMatcher != null) composeRule.onNode(rootMatcher) else composeRule.onRoot()
+    val image = rootNode.captureToImage().asAndroidBitmap()
+    FileOutputStream(screenshotFile).use { out ->
+      image.compress(Bitmap.CompressFormat.PNG, screenshotQuality.value, out)
+    }
   }
 
   /**
@@ -145,8 +164,28 @@ object ScreenCaptor {
       }
     }
   }
+
+  @Synchronized
+  fun takeScreenshot(
+    composeRule: ComposeTestRule,
+    screenshotName: String,
+    screenshotNameSuffix: String = "",
+    screenshotDirectory: String = defaultScreenshotDirectory,
+    screenshotFormat: ScreenshotFormat = PNG,
+    screenshotQuality: ScreenshotQuality = BEST,
+    rootMatcher: SemanticsMatcher? = null
+  ) {
+    val screenshotFile = getScreenshotFile(
+      screenshotDirectory = screenshotDirectory,
+      screenshotName = screenshotName,
+      screenshotNameSuffix = screenshotNameSuffix,
+      screenshotFormat = screenshotFormat
+    )
+
+    captureScreenshot(composeRule, screenshotFile, screenshotQuality, rootMatcher)
+  }
 }
 
 private fun String.replaceWithUnderscore(): String {
-  return toLowerCase(ENGLISH).replace(" ", "_")
+  return lowercase(ENGLISH).replace(" ", "_")
 }
