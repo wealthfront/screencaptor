@@ -45,6 +45,7 @@ import com.wealthfront.screencaptor.viewmutator.ImageViewMutator
 import com.wealthfront.screencaptor.viewmutator.TextViewMutator
 import com.wealthfront.screencaptor.viewmutator.ViewMutationImpl
 import com.wealthfront.screencaptor.viewmutator.VisibilityViewMutator
+import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -64,6 +65,11 @@ class ScreenshotTest {
 
   @get:Rule
   var permissionsRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+
+  @After
+  fun cleanUpScreenshots() {
+    File(screenShotDirectory).deleteRecursively()
+  }
 
   @get:Rule
   val composeTestRule = createComposeRule()
