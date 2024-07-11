@@ -51,7 +51,6 @@ class ScreenshotComposeTest {
           DemoUI()
     }
     composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
-    Log.e("Compose Root Log",composeTestRule.onRoot().printToString())
 
     ScreenCaptor.takeScreenshot(
       composeRule = composeTestRule,

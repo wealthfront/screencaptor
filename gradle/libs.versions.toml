@@ -11,9 +11,7 @@ truth = "1.0"
 espresso = "3.5.1"
 agp = "8.2.2"
 kotlin = "2.0.0"
-compose-compiler-extension = "1.4.8"
 compose-bom = "2023.09.02"
-compose-lints = "1.3.1"
 
 [libraries]
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
@@ -38,7 +36,6 @@ compose-material = { group = "androidx.compose.material", name = "material" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-compose-lints = { group = "com.slack.lint.compose", name = "compose-lint-checks", version.ref = "compose-lints" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
