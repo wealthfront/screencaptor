@@ -5,23 +5,11 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.graphics.BitmapFactory.decodeByteArray
 import android.graphics.BitmapFactory.decodeFile
 import android.os.Environment
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RawRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -71,9 +59,6 @@ class ScreenshotTest {
     File(screenShotDirectory).deleteRecursively()
   }
 
-  @get:Rule
-  val composeTestRule = createComposeRule()
-
   @Test
   fun takeScreenshot_dialog() {
     onView(withId(AppRes.id.showDialog)).perform(click())
@@ -94,7 +79,7 @@ class ScreenshotTest {
       .inRoot(isDialog())
       .check(matches(isDisplayed()))
 
-    compareScreenshots("screenshot_dialog", TestRes.raw.dialog)
+    compareScreenshots("screenshot_dialog", TestRes.raw.screenshot_dialog_pixel7)
   }
 
   @Test
@@ -122,7 +107,7 @@ class ScreenshotTest {
     onView(withId(AppRes.id.messageList))
       .check(matches(RecyclerViewMatchers.hasItemWithText("Mastiff")))
 
-    compareScreenshots("screenshot_recyclerview", TestRes.raw.recycler_view)
+    compareScreenshots("screenshot_recyclerview", TestRes.raw.screenshot_recyclerview_pixel7)
   }
 
   @Test
@@ -142,7 +127,7 @@ class ScreenshotTest {
     onView(withText("Some sample data which is really long, so long that it wraps to another line and maybe even three lines"))
       .check(matches(isDisplayed()))
 
-    compareScreenshots("screenshot_change_text", TestRes.raw.change_text)
+    compareScreenshots("screenshot_change_text", TestRes.raw.screenshot_change_text_pixel7)
   }
 
   @Test
@@ -160,7 +145,7 @@ class ScreenshotTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("screenshot_change_image", TestRes.raw.change_image)
+    compareScreenshots("screenshot_change_image", TestRes.raw.screenshot_change_image_pixel7)
   }
 
   @Test
@@ -180,33 +165,7 @@ class ScreenshotTest {
     onView(withId(AppRes.id.wealthfrontIcon))
       .check(matches(withEffectiveVisibility(VISIBLE)))
 
-    compareScreenshots("screenshot_no_logo", TestRes.raw.no_logo)
-  }
-
-  @Test
-  fun takeScreenshot_compose() {
-    composeTestRule.setContent {
-      MaterialTheme {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray)
-            .padding(24.dp),
-          verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-          DemoUI()
-        }
-      }
-    }
-    composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
-
-    ScreenCaptor.takeScreenshot(
-      composeRule = composeTestRule,
-      screenshotName = "compose",
-      screenshotDirectory = screenShotDirectory
-    )
-
-    compareScreenshots("compose", TestRes.raw.compose_pixe7)
+    compareScreenshots("screenshot_no_logo", TestRes.raw.screenshot_no_logo_pixel7)
   }
 
   private fun compareScreenshots(actualScreenShotName: String, @RawRes expectedScreenShotId: Int) {

@@ -14,17 +14,21 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = Versions.javaVersion
+    targetCompatibility = Versions.javaVersion
   }
+
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = Versions.javaVersion.toString()
     freeCompilerArgs += listOf(
       "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
       "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
     )
   }
 
+  buildFeatures {
+    compose = true
+  }
 
   targetProjectPath(":screencaptor-sample")
 }
@@ -50,6 +54,5 @@ dependencies {
   implementation(libs.compose.material)
   implementation(libs.compose.material3)
   implementation(libs.compose.manifest)
-  implementation(libs.compose.junit4)
   implementation(libs.compose.junit4)
 }
