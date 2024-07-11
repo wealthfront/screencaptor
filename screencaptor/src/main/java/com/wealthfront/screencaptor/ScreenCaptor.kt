@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
 import android.os.Build.VERSION.SDK_INT
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -12,8 +13,10 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.Root
 import com.wealthfront.screencaptor.ScreenCaptor.takeScreenshot
 import com.wealthfront.screencaptor.ScreenshotFormat.PNG
 import com.wealthfront.screencaptor.ScreenshotQuality.BEST
@@ -28,6 +31,8 @@ import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale.ENGLISH
+import androidx.test.espresso.base.RootsOracle_Factory
+import androidx.test.platform.app.InstrumentationRegistry
 
 /**
  * Has the ability to take a screenshot of the current view displayed on the screen using the method [takeScreenshot].
@@ -35,6 +40,7 @@ import java.util.Locale.ENGLISH
 object ScreenCaptor {
 
   private val SCREENSHOT = javaClass.simpleName
+  private val TOP_BAR_HEIGHT = 24
   private const val defaultScreenshotDirectory = "screenshots"
   private val defaultGlobalMutations: Set<GlobalViewMutation> = setOf(CursorHider, ScrollbarHider)
 
@@ -88,6 +94,26 @@ object ScreenCaptor {
     val image = rootNode.captureToImage().asAndroidBitmap()
     FileOutputStream(screenshotFile).use { out ->
       image.compress(Bitmap.CompressFormat.PNG, screenshotQuality.value, out)
+    }
+  }
+
+  private fun captureScreenshot(
+    screenshotFile: File,
+    screenshotQuality: ScreenshotQuality = BEST
+  ) {
+    val instrumentation = InstrumentationRegistry.getInstrumentation()
+    val fullScreenshot = instrumentation.uiAutomation.takeScreenshot()
+    val density = instrumentation.targetContext.resources.displayMetrics.density
+    val topBarHeightPx = (TOP_BAR_HEIGHT * density).toInt()
+    val croppedScreenshot = Bitmap.createBitmap(
+      fullScreenshot,
+      0,
+      topBarHeightPx,
+      fullScreenshot.width,
+      fullScreenshot.height - topBarHeightPx
+    )
+    FileOutputStream(screenshotFile).use { out ->
+      croppedScreenshot.compress(Bitmap.CompressFormat.PNG, screenshotQuality.value, out)
     }
   }
 
@@ -183,6 +209,24 @@ object ScreenCaptor {
     )
 
     captureScreenshot(composeRule, screenshotFile, screenshotQuality, rootMatcher)
+  }
+
+  @Synchronized
+  fun takeScreenshot(
+    screenshotName: String,
+    screenshotNameSuffix: String = "",
+    screenshotDirectory: String = defaultScreenshotDirectory,
+    screenshotFormat: ScreenshotFormat = PNG,
+    screenshotQuality: ScreenshotQuality = BEST,
+  ) {
+    val screenshotFile = getScreenshotFile(
+      screenshotDirectory = screenshotDirectory,
+      screenshotName = screenshotName,
+      screenshotNameSuffix = screenshotNameSuffix,
+      screenshotFormat = screenshotFormat
+    )
+
+    captureScreenshot(screenshotFile, screenshotQuality)
   }
 }
 

@@ -8,6 +8,10 @@ android {
   namespace = "com.wealthfront.screencaptor.sample.test"
   compileSdk = 34
 
+  testOptions {
+    animationsDisabled = true
+  }
+
   defaultConfig {
     minSdk = 26
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

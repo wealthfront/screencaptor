@@ -5,6 +5,7 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.graphics.BitmapFactory.decodeByteArray
 import android.graphics.BitmapFactory.decodeFile
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RawRes
@@ -17,8 +18,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
+import androidx.compose.ui.test.printToString
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
@@ -75,17 +82,10 @@ class ScreenshotComposeTest {
   @Test
   fun takeScreenshot_compose() {
     composeTestRule.setContent {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray)
-            .padding(24.dp),
-          verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
           DemoUI()
-        }
     }
     composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
+    Log.e("Compose Root Log",composeTestRule.onRoot().printToString())
 
     ScreenCaptor.takeScreenshot(
       composeRule = composeTestRule,
@@ -93,7 +93,24 @@ class ScreenshotComposeTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("compose", TestRes.raw.compose_pixe7)
+    compareScreenshots("compose", TestRes.raw.compose_pixel7)
+  }
+
+  @Test
+  fun takeScreenshot_compose_dialogs() {
+    composeTestRule.setContent {
+        DemoUI(true)
+    }
+    composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
+    composeTestRule.onNodeWithText("Add more").performClick()
+    composeTestRule.waitForIdle()
+
+    ScreenCaptor.takeScreenshot(
+      screenshotName = "compose_dialogs",
+      screenshotDirectory = screenShotDirectory
+    )
+
+    compareScreenshots("compose_dialogs", TestRes.raw.compose_dialogs_pixel7)
   }
 
   private fun compareScreenshots(actualScreenShotName: String, @RawRes expectedScreenShotId: Int) {
