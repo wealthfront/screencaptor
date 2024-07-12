@@ -15,7 +15,7 @@ Simple Android library to capture screenshots deterministically
 Add this dependency in your build.gradle:
 
 ```groovy
-implementation 'com.wealthfront:screencaptor:2.0.0'
+implementation 'com.wealthfront:screencaptor:2.1.0'
 ```
 
 ## How do I capture a screenshot?
@@ -78,7 +78,7 @@ This helps us address a class of bugs before our app rolls out to production :)
 
 ## License
 ```
-Copyright 2023 Wealthfront, Inc.
+Copyright 2024 Wealthfront, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
