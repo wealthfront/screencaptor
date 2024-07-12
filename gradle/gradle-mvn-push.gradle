@@ -87,6 +87,8 @@ afterEvaluate { project ->
   }
 
   signing {
-    sign publishing.publications
+    publishing.publications.all { publication ->
+      sign publication
+    }
   }
 }
