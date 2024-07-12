@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.compose.compiler)
 }
 
 apply(from = "../gradle/gradle-mvn-push.gradle")
@@ -13,6 +14,11 @@ android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    buildFeatures {
+        compose = true
+    }
+
 }
 
 dependencies {
@@ -29,4 +35,15 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.androidx.test.rules)
     testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.compose.junit4)
+
+    implementation(enforcedPlatform(libs.compose.bom))
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.tooling)
+    implementation(libs.compose.tooling.preview)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.manifest)
+    implementation(libs.compose.junit4)
 }

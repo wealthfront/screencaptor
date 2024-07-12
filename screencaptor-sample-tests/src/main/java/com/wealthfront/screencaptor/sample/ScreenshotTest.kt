@@ -79,7 +79,7 @@ class ScreenshotTest {
       .inRoot(isDialog())
       .check(matches(isDisplayed()))
 
-    compareScreenshots("screenshot_dialog", TestRes.raw.dialog)
+    compareScreenshots("screenshot_dialog", TestRes.raw.screenshot_dialog_pixel7)
   }
 
   @Test
@@ -107,7 +107,7 @@ class ScreenshotTest {
     onView(withId(AppRes.id.messageList))
       .check(matches(RecyclerViewMatchers.hasItemWithText("Mastiff")))
 
-    compareScreenshots("screenshot_recyclerview", TestRes.raw.recycler_view)
+    compareScreenshots("screenshot_recyclerview", TestRes.raw.screenshot_recyclerview_pixel7)
   }
 
   @Test
@@ -127,7 +127,7 @@ class ScreenshotTest {
     onView(withText("Some sample data which is really long, so long that it wraps to another line and maybe even three lines"))
       .check(matches(isDisplayed()))
 
-    compareScreenshots("screenshot_change_text", TestRes.raw.change_text)
+    compareScreenshots("screenshot_change_text", TestRes.raw.screenshot_change_text_pixel7)
   }
 
   @Test
@@ -145,7 +145,7 @@ class ScreenshotTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("screenshot_change_image", TestRes.raw.change_image)
+    compareScreenshots("screenshot_change_image", TestRes.raw.screenshot_change_image_pixel7)
   }
 
   @Test
@@ -165,7 +165,7 @@ class ScreenshotTest {
     onView(withId(AppRes.id.wealthfrontIcon))
       .check(matches(withEffectiveVisibility(VISIBLE)))
 
-    compareScreenshots("screenshot_no_logo", TestRes.raw.no_logo)
+    compareScreenshots("screenshot_no_logo", TestRes.raw.screenshot_no_logo_pixel7)
   }
 
   private fun compareScreenshots(actualScreenShotName: String, @RawRes expectedScreenShotId: Int) {
