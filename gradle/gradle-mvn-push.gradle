@@ -79,7 +79,6 @@ afterEvaluate { project ->
     }
   }
 
-
   publishing.publications.all { publication ->
     publication.groupId = GROUP
     publication.version = VERSION_NAME
@@ -88,8 +87,6 @@ afterEvaluate { project ->
   }
 
   signing {
-    publishing.publications.all { publication ->
-      sign publication
-    }
+    sign publishing.publications
   }
 }

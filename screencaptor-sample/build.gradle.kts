@@ -24,7 +24,7 @@ dependencies {
   implementation(libs.appcompat)
   testImplementation(project(":internal-test-support"))
 
-  implementation(enforcedPlatform(libs.compose.bom))
+  implementation(platform(libs.compose.bom))
   implementation(libs.compose.foundation)
   implementation(libs.compose.ui)
   implementation(libs.compose.tooling)

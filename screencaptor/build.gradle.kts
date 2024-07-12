@@ -42,7 +42,7 @@ dependencies {
     testImplementation(libs.androidx.test.junit)
     testImplementation(libs.compose.junit4)
 
-    implementation(enforcedPlatform(libs.compose.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.foundation)
     implementation(libs.compose.ui)
     implementation(libs.compose.tooling)
