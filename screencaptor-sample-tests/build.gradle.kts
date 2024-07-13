@@ -50,7 +50,7 @@ dependencies {
   implementation(libs.androidx.test.rules)
   implementation(libs.androidx.test.junit)
 
-  implementation(enforcedPlatform(libs.compose.bom))
+  implementation(platform(libs.compose.bom))
   implementation(libs.compose.foundation)
   implementation(libs.compose.ui)
   implementation(libs.compose.tooling)
