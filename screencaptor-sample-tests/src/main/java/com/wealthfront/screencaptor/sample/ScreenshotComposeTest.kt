@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory.decodeFile
 import android.os.Environment
 import android.util.Log
 import androidx.annotation.RawRes
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith
 import java.io.File
 import com.wealthfront.screencaptor.sample.test.R as TestRes
 
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class ScreenshotComposeTest {
 
@@ -48,7 +51,7 @@ class ScreenshotComposeTest {
   @Test
   fun takeScreenshot_compose() {
     composeTestRule.setContent {
-          DemoUI()
+      DemoUI()
     }
     composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
 
@@ -58,25 +61,29 @@ class ScreenshotComposeTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("compose", TestRes.raw.compose_pixel7)
+    compareScreenshots("compose", TestRes.raw.compose_pixel7_api33)
   }
 
   @Test
   fun takeScreenshot_compose_dialogs() {
     composeTestRule.setContent {
-        DemoUI(true)
+      DemoUI(true)
     }
     composeTestRule.onNodeWithText("Welcome to wealthfront").assertExists()
     composeTestRule.onNodeWithText("Add more").performClick()
+
+    //ComposeTestRule.waitForIdle() doesn't wait until the dialog is fully open.
     composeTestRule.waitForIdle()
+    Thread.sleep(300)
 
     ScreenCaptor.takeScreenshot(
       screenshotName = "compose_dialogs",
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("compose_dialogs", TestRes.raw.compose_dialogs_pixel7)
+    compareScreenshots("compose_dialogs", TestRes.raw.compose_dialogs_pixel7_api33)
   }
+
 
   private fun compareScreenshots(actualScreenShotName: String, @RawRes expectedScreenShotId: Int) {
     val screenshot = File(screenShotDirectory).listFiles()!!.find { it.name.contains(actualScreenShotName) }!!

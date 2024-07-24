@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.core.app.ActivityScenario
