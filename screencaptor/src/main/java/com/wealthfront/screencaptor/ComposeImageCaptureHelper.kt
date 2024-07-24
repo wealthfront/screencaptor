@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 
+//ComposeTestRule.captureToImage doesn't work because it tries to invalidate the hierarchy and force a redraw. Added helper functions based on the discussion here https://github.com/robolectric/robolectric/issues/8071
+
 @OptIn(ExperimentalTestApi::class)
 fun SemanticsNodeInteraction.captureToImage(): ImageBitmap {
     val node = fetchSemanticsNode("Failed to capture a node to bitmap.")
