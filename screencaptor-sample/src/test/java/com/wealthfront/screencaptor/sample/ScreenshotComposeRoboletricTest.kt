@@ -36,7 +36,7 @@ import org.robolectric.shadows.ShadowPixelCopy
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
-class ScreenshotComposeRoboletricTest {
+class ScreenshotComposeRobolectricTest {
 
     private val screenShotDirectory: String =
         "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
