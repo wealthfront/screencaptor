@@ -13,7 +13,6 @@ import android.view.PixelCopy
 import android.view.View
 import android.view.Window
 import androidx.annotation.DoNotInline
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
