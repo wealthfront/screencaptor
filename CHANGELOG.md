@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 2.1.1 *(2024-07-25)*
+----------------------------
+* Add custom capture methods to ensure compatibility with robolectric
+
 Version 2.1.0 *(2024-07-12)*
 ----------------------------
 * Add API for passing a ComposeRule
