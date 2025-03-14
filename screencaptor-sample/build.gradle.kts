@@ -20,8 +20,9 @@ android {
 
 dependencies {
   implementation(project(":screencaptor"))
-  implementation(libs.recyclerview)
   implementation(libs.appcompat)
+  implementation(libs.recyclerview)
+  implementation(libs.androidx.activity.ktx)
   testImplementation(project(":internal-test-support"))
 
   implementation(platform(libs.compose.bom))

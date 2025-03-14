@@ -3,6 +3,7 @@ package com.wealthfront.screencaptor.sample
 import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +13,8 @@ class SampleActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+
     setContentView(R.layout.screenshot_test)
     findViewById<Button>(R.id.showDialog).setOnClickListener {
       AlertDialog.Builder(this)

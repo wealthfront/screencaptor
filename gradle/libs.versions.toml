@@ -1,6 +1,7 @@
 [versions]
 recyclerview = "1.4.0"
 appcompat = "1.7.0"
+androidx-activity-ktx = "1.9.1"
 screenshotty = "1.0.4"
 robolectric = "4.14.1"
 test-core = "1.6.1"
@@ -16,6 +17,7 @@ compose-bom = "2025.03.00"
 [libraries]
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity-ktx" }
 screenshotty = { group = "eu.bolt", name = "screenshotty", version.ref = "screenshotty" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
