@@ -20,13 +20,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout sources
+        uses: actions/checkout@v4
       - name: Set up our JDK environment
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17.0.12'
+          java-version: '17.0.14'
       - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           arguments: testDebugUnitTest
