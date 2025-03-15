@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: actual-screenshots
-          path: screencaptor/screencaptor-sample/outputs/*.png
+          path: screencaptor-sample/outputs/
