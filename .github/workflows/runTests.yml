@@ -35,5 +35,5 @@ jobs:
         with:
           name: actual-screenshots
           path: |
-            screencaptor/screencaptor-sample/outputs
-            screencaptor/screencaptor-sample/build/reports/tests/testDebugUnitTest/index.html
+            screencaptor-sample/outputs
+            screencaptor-sample/build/reports/tests/testDebugUnitTest/index.html
