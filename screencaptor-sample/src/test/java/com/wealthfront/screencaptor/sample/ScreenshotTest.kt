@@ -29,8 +29,8 @@ import com.wealthfront.screencaptor.sample.R as AppRes
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ScreenshotTest {
 
-  private val screenShotDirectory: String =
-    "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
+  private val screenShotDirectory: String = System.getProperty("user.dir") + "/outputs"
+    // "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
 
   @get:Rule
   var activityTestRule: ActivityScenarioRule<SampleActivity> =
@@ -41,7 +41,7 @@ class ScreenshotTest {
 
   @After
   fun cleanUpScreenshots() {
-    File(screenShotDirectory).deleteRecursively()
+    // File(screenShotDirectory).deleteRecursively()
   }
 
   @Test

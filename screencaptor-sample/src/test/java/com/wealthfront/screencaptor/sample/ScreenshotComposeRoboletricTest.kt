@@ -34,8 +34,8 @@ import java.io.File
 @RunWith(RobolectricTestRunner::class)
 class ScreenshotComposeRobolectricTest {
 
-    private val screenShotDirectory: String =
-        "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
+    private val screenShotDirectory: String = System.getProperty("user.dir") + "/outputs"
+    // "${getInstrumentation().targetContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath}/screenshots"
 
     @get:Rule
     var activityTestRule: ActivityScenarioRule<SampleActivity> =
@@ -49,7 +49,7 @@ class ScreenshotComposeRobolectricTest {
 
     @After
     fun cleanUpScreenshots() {
-        File(screenShotDirectory).deleteRecursively()
+        // File(screenShotDirectory).deleteRecursively()
     }
 
     @GraphicsMode(GraphicsMode.Mode.NATIVE)

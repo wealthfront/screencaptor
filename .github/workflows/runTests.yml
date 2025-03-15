@@ -31,3 +31,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           arguments: testDebugUnitTest
+      - name: Archive screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-screenshots
+          path: screencaptor/screencaptor-sample/outputs/*.png
