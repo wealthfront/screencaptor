@@ -27,7 +27,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17.0.14'
-      - name: Build with Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          arguments: testDebugUnitTest
+      - name: Build with Gradle
+        run: ./gradlew testDebugUnitTest
