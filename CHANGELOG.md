@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 2.1.2 *(2025-03-17)*
+----------------------------
+* Update samples, libraries for edge-to-edge
+
 Version 2.1.1 *(2024-07-25)*
 ----------------------------
 * Add custom capture methods to ensure compatibility with robolectric
