@@ -81,7 +81,7 @@ class ScreenshotComposeRobolectricTest {
         )
 
 
-        compareScreenshots("compose", R.raw.compose_unknown_robolectric)
+        compareScreenshots("compose", R.raw.compose_robolectric_robolectric_34)
     }
 
 

@@ -61,7 +61,7 @@ class ScreenshotComposeTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("compose", TestRes.raw.compose_pixel7_api33)
+    compareScreenshots("compose", TestRes.raw.compose_pixel7_api35)
   }
 
   @Test
@@ -81,7 +81,7 @@ class ScreenshotComposeTest {
       screenshotDirectory = screenShotDirectory
     )
 
-    compareScreenshots("compose_dialogs", TestRes.raw.compose_dialogs_pixel7_api33)
+    compareScreenshots("compose_dialogs", TestRes.raw.compose_dialogs_pixel7_api35)
   }
 
 
