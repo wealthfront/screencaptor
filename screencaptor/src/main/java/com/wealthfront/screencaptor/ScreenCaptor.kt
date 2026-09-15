@@ -21,13 +21,14 @@ import com.wealthfront.screencaptor.globalmutator.CursorHider
 import com.wealthfront.screencaptor.globalmutator.ScrollbarHider
 import com.wealthfront.screencaptor.globalmutator.ViewTreeMutator
 import com.wealthfront.screencaptor.idlingresource.ScreenshotIdlingResource
-import eu.bolt.screenshotty.Screenshot
 import eu.bolt.screenshotty.ScreenshotActionOrder
 import eu.bolt.screenshotty.ScreenshotManagerBuilder
 import eu.bolt.screenshotty.util.ScreenshotFileSaver
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale.ENGLISH
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
 
 /**
  * Has the ability to take a screenshot of the current view displayed on the screen using the method [takeScreenshot].
@@ -45,15 +46,14 @@ object ScreenCaptor {
     screenshotNameSuffix: String = "",
     screenshotFormat: ScreenshotFormat = PNG,
   ): File {
-    if (!File(screenshotDirectory).exists()) {
+    if (!File(screenshotDirectory).isDirectory) {
       Log.d(SCREENSHOT, "Creating directory $screenshotDirectory since it does not exist")
-      val screenshotDirsCreated = File(screenshotDirectory).mkdirs()
-      assert(screenshotDirsCreated)
     }
+    ensureScreenshotDirectoryExists(screenshotDirectory)
 
     val deviceName = MANUFACTURER.replaceWithUnderscore() + "_" + MODEL.replaceWithUnderscore()
     val screenshotId =
-      "${screenshotName.toLowerCase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
+      "${screenshotName.lowercase(ENGLISH)}_${deviceName}_${SDK_INT}_$screenshotNameSuffix"
     return File("$screenshotDirectory/$screenshotId.${screenshotFormat.extension}")
   }
 
@@ -61,7 +61,7 @@ object ScreenCaptor {
     activity: Activity,
     screenshotFile: File,
     screenshotQuality: ScreenshotQuality = BEST,
-    onSuccess: (Screenshot) -> Unit
+    onComplete: () -> Unit
   ) {
     val screenshotManager = ScreenshotManagerBuilder(activity)
       .withCustomActionOrder(ScreenshotActionOrder.fallbacksFirst())
@@ -69,14 +69,27 @@ object ScreenCaptor {
 
     screenshotManager.makeScreenshot()
       .observe({ screenshot ->
-        val fileSaver = ScreenshotFileSaver.create(
-          compressFormat = Bitmap.CompressFormat.PNG,
-          compressQuality = screenshotQuality.value
-        )
-        fileSaver.saveToFile(screenshotFile, screenshot)
+        try {
+          val fileSaver = ScreenshotFileSaver.create(
+            compressFormat = Bitmap.CompressFormat.PNG,
+            compressQuality = screenshotQuality.value
+          )
+          fileSaver.saveToFile(screenshotFile, screenshot)
+        } finally {
+          onComplete()
+        }
+      }, { throwable ->
+        try {
+          onComplete()
+        } finally {
+          throw throwable
+        }
+      })
+  }
 
-        onSuccess.invoke(screenshot)
-      }, { throwable -> throw throwable })
+  private fun releaseScreenshotIdlingResource(idlingResource: ScreenshotIdlingResource) {
+    idlingResource.setScreenshotCaptured()
+    IdlingRegistry.getInstance().unregister(idlingResource)
   }
 
   private fun captureScreenshot(
@@ -156,33 +169,37 @@ object ScreenCaptor {
 
     val idlingResource = ScreenshotIdlingResource()
     IdlingRegistry.getInstance().register(idlingResource)
-    val screenshotFile = getScreenshotFile(
-      screenshotDirectory = screenshotDirectory,
-      screenshotName = screenshotName,
-      screenshotNameSuffix = screenshotNameSuffix,
-      screenshotFormat = screenshotFormat
-    )
-    activityScenario.onActivity { activity ->
-      ViewTreeMutator.Builder()
-        .addMutations(defaultGlobalMutations)
-        .addMutations(globalViewMutations)
-        .build()
-        .mutate(activity)
+    try {
+      val screenshotFile = getScreenshotFile(
+        screenshotDirectory = screenshotDirectory,
+        screenshotName = screenshotName,
+        screenshotNameSuffix = screenshotNameSuffix,
+        screenshotFormat = screenshotFormat
+      )
+      activityScenario.onActivity { activity ->
+        ViewTreeMutator.Builder()
+          .addMutations(defaultGlobalMutations)
+          .addMutations(globalViewMutations)
+          .build()
+          .mutate(activity)
 
-      captureScreenshot(
-        activity,
-        screenshotFile,
-        screenshotQuality
-      ) { screenshot ->
-        idlingResource.setScreenshotCaptured()
-        IdlingRegistry.getInstance().unregister(idlingResource)
+        captureScreenshot(
+          activity,
+          screenshotFile,
+          screenshotQuality
+        ) {
+          releaseScreenshotIdlingResource(idlingResource)
+        }
       }
-    }
 
-    viewMutations.forEach { viewMutation ->
-      with(viewMutation) {
-        getViewInteraction().perform(getRestoreAction())
+      viewMutations.forEach { viewMutation ->
+        with(viewMutation) {
+          getViewInteraction().perform(getRestoreAction())
+        }
       }
+    } catch (error: Throwable) {
+      releaseScreenshotIdlingResource(idlingResource)
+      throw error
     }
   }
 
@@ -262,6 +279,31 @@ object ScreenCaptor {
     )
 
     captureScreenshot(screenshotFile, screenshotQuality)
+  }
+}
+
+internal fun ensureScreenshotDirectoryExists(
+  screenshotDirectory: String,
+  createDirectories: (java.nio.file.Path) -> Unit = { it.createDirectories() }
+) {
+  val directory = File(screenshotDirectory)
+  if (directory.isDirectory) {
+    return
+  }
+
+  try {
+    createDirectories(Path(screenshotDirectory))
+  } catch (e: Exception) {
+    throw IllegalStateException(
+      "Failed to create screenshot directory for path: $screenshotDirectory",
+      e
+    )
+  }
+
+  if (!directory.isDirectory) {
+    throw IllegalStateException(
+      "Failed to create screenshot directory for path: $screenshotDirectory"
+    )
   }
 }
 
