@@ -4,6 +4,7 @@ import androidx.test.espresso.IdlingResource
 
 internal class ScreenshotIdlingResource: IdlingResource {
   private var resourceCallback: IdlingResource.ResourceCallback? = null
+  @Volatile
   private var screenshotCaptured = false
 
   override fun getName(): String = "ScreenCaptor#captureScreenshot"
