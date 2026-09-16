@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 2.1.3 *(2026-09-16)*
+----------------------------
+* Improve error messaging when screenshot directory can't be created
+
 Version 2.1.2 *(2025-03-17)*
 ----------------------------
 * Update samples, libraries for edge-to-edge
